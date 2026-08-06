@@ -50,10 +50,13 @@
   .b-onhold{background:var(--amber-bg);color:var(--amber-text);}
   .b-sourced{background:#eee;color:var(--text-2);}
   .b-screening{background:var(--accent-bg);color:var(--accent-text);}
-  .b-interview{background:var(--amber-bg);color:var(--amber-text);}
+  .b-submitted{background:#E6E0FB;color:#4B2E9E;}
+  .b-clientinterview{background:var(--amber-bg);color:var(--amber-text);}
   .b-offer{background:#F0E7FB;color:#5B3B96;}
   .b-hired{background:var(--green-bg);color:var(--green-text);}
+  .b-onhold{background:#F3F1E8;color:#7A7460;}
   .b-rejected{background:var(--red-bg);color:var(--red-text);}
+  .tag{display:inline-block;background:var(--accent-bg);color:var(--accent-text);font-size:11px;padding:2px 8px;border-radius:6px;margin:0 4px 4px 0;}
   .empty{text-align:center;color:var(--text-3);padding:40px 0;font-size:13px;}
   .link-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;padding:0;margin-right:10px;}
   .link-btn.danger{color:var(--red);}
@@ -138,20 +141,28 @@
       <div class="form-grid">
         <div class="field"><label>Nama kandidat</label><input id="c-name" placeholder="nama lengkap"/></div>
         <div class="field"><label>Kontak</label><input id="c-contact" placeholder="no HP / email"/></div>
+        <div class="field"><label>Usia</label><input id="c-age" type="number" min="15" max="70" placeholder="misal: 32"/></div>
         <div class="field"><label>Posisi terkait</label><select id="c-position"></select></div>
+        <div class="field"><label>Pengalaman (tahun)</label><input id="c-years" type="number" min="0" max="50" placeholder="misal: 5"/></div>
+        <div class="field"><label>Pendidikan</label><input id="c-education" placeholder="misal: S1 Akuntansi - UI"/></div>
+        <div class="field"><label>Perusahaan saat ini</label><input id="c-company" placeholder="nama perusahaan sekarang/terakhir"/></div>
+        <div class="field"><label>Jabatan saat ini</label><input id="c-title" placeholder="jabatan sekarang/terakhir"/></div>
+        <div class="field" style="grid-column:1/-1;"><label>Skill (pisahkan koma)</label><input id="c-skills" placeholder="misal: SAP, Excel, Financial Modeling"/></div>
         <div class="field"><label>Stage</label>
           <select id="c-stage">
             <option value="sourced">Sourced</option>
-            <option value="screening">Screening</option>
-            <option value="interview">Interview</option>
+            <option value="screening">Screening (internal)</option>
+            <option value="submitted">Submitted to client</option>
+            <option value="clientinterview">Client interview</option>
             <option value="offer">Offer</option>
             <option value="hired">Hired</option>
+            <option value="onhold">On hold</option>
             <option value="rejected">Rejected</option>
           </select>
         </div>
       </div>
       <div class="form-grid full">
-        <div class="field"><label>Catatan</label><textarea id="c-notes" placeholder="hasil interview, ekspektasi gaji, dll"></textarea></div>
+        <div class="field"><label>Catatan</label><textarea id="c-notes" placeholder="hasil interview, ekspektasi gaji, alasan reject, dll"></textarea></div>
       </div>
       <div class="form-actions">
         <button class="btn secondary" id="c-cancel">Batal</button>
@@ -162,7 +173,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="cand-table">
         <thead><tr>
-          <th>Nama</th><th>Kontak</th><th>Posisi</th><th>Stage</th><th>Catatan</th><th></th>
+          <th>Nama</th><th>Usia</th><th>Kontak</th><th>Posisi</th><th>Pengalaman</th><th>Background</th><th>Skill</th><th>Stage</th><th>Catatan</th><th></th>
         </tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
@@ -182,7 +193,7 @@ let editingPosId = null;
 let editingCandId = null;
 
 const posStatusLabel = {open:"Open", onhold:"On hold", filled:"Filled", closed:"Closed"};
-const stageLabel = {sourced:"Sourced", screening:"Screening", interview:"Interview", offer:"Offer", hired:"Hired", rejected:"Rejected"};
+const stageLabel = {sourced:"Sourced", screening:"Screening", submitted:"Submitted to client", clientinterview:"Client interview", offer:"Offer", hired:"Hired", onhold:"On hold", rejected:"Rejected"};
 
 function isConfigured(){
   return APPS_SCRIPT_URL && APPS_SCRIPT_URL.startsWith('http');
@@ -270,12 +281,19 @@ function renderCandidates(){
   tbody.innerHTML = rows.map(c => {
     const pos = positions.find(p => p.id === c.positionId);
     const posLabel = pos ? `${escapeHtml(pos.client)} - ${escapeHtml(pos.title)}` : '<span class="muted">posisi dihapus</span>';
+    const background = [c.currentTitle, c.currentCompany].filter(Boolean).map(escapeHtml).join(' @ ');
+    const skillsHtml = (c.skills||'').split(',').map(s=>s.trim()).filter(Boolean)
+      .map(s=>`<span class="tag">${escapeHtml(s)}</span>`).join('');
     return `<tr>
       <td>${escapeHtml(c.name)}</td>
+      <td>${c.age||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(c.contact)||'<span class="muted">-</span>'}</td>
       <td>${posLabel}</td>
+      <td>${c.yearsExperience ? c.yearsExperience+' th' : '<span class="muted">-</span>'}</td>
+      <td style="max-width:160px;">${background||'<span class="muted">-</span>'}${c.education?`<br><span class="muted" style="font-size:11px;">${escapeHtml(c.education)}</span>`:''}</td>
+      <td style="max-width:180px;">${skillsHtml||'<span class="muted">-</span>'}</td>
       <td><span class="badge b-${c.stage}">${stageLabel[c.stage]||c.stage}</span></td>
-      <td style="max-width:220px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
+      <td style="max-width:180px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
       <td>
         <button class="link-btn" onclick="editCandidate('${c.id}')">Edit</button>
         <button class="link-btn danger" onclick="deleteCandidate('${c.id}')">Hapus</button>
@@ -363,7 +381,13 @@ window.deletePosition = async function(id){
 function resetCandForm(){
   document.getElementById('c-name').value='';
   document.getElementById('c-contact').value='';
+  document.getElementById('c-age').value='';
   document.getElementById('c-position').value = positions[0]?.id || '';
+  document.getElementById('c-years').value='';
+  document.getElementById('c-education').value='';
+  document.getElementById('c-company').value='';
+  document.getElementById('c-title').value='';
+  document.getElementById('c-skills').value='';
   document.getElementById('c-stage').value='sourced';
   document.getElementById('c-notes').value='';
   editingCandId = null;
@@ -383,7 +407,13 @@ document.getElementById('c-save').addEventListener('click', async () => {
   const data = {
     name,
     contact: document.getElementById('c-contact').value.trim(),
+    age: document.getElementById('c-age').value,
     positionId: document.getElementById('c-position').value,
+    yearsExperience: document.getElementById('c-years').value,
+    education: document.getElementById('c-education').value.trim(),
+    currentCompany: document.getElementById('c-company').value.trim(),
+    currentTitle: document.getElementById('c-title').value.trim(),
+    skills: document.getElementById('c-skills').value.trim(),
     stage: document.getElementById('c-stage').value,
     notes: document.getElementById('c-notes').value.trim(),
   };
@@ -407,7 +437,13 @@ window.editCandidate = function(id){
   editingCandId = id;
   document.getElementById('c-name').value=c.name;
   document.getElementById('c-contact').value=c.contact||'';
+  document.getElementById('c-age').value=c.age||'';
   document.getElementById('c-position').value=c.positionId;
+  document.getElementById('c-years').value=c.yearsExperience||'';
+  document.getElementById('c-education').value=c.education||'';
+  document.getElementById('c-company').value=c.currentCompany||'';
+  document.getElementById('c-title').value=c.currentTitle||'';
+  document.getElementById('c-skills').value=c.skills||'';
   document.getElementById('c-stage').value=c.stage;
   document.getElementById('c-notes').value=c.notes||'';
   document.getElementById('cand-form').style.display='block';
