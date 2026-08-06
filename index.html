@@ -16,7 +16,7 @@
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 60px;}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px 20px 60px;}
   h1{font-size:20px;font-weight:600;margin:0 0 4px;}
   .sub{color:var(--text-2);font-size:13px;margin:0 0 20px;}
   .setup-banner{background:var(--amber-bg);color:var(--amber-text);border:1px solid #e8c98a;border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:16px;}
@@ -29,41 +29,45 @@
   .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
   .btn{background:var(--accent);color:#fff;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;}
   .btn:hover{opacity:.9;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
   .btn.secondary{background:#fff;color:var(--text);border:1px solid var(--border-strong);}
   select.filter{padding:8px 10px;border-radius:8px;border:1px solid var(--border-strong);font-size:13px;background:#fff;color:var(--text);}
   .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;}
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:12px;}
+  .form-section-label{font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em;margin:14px 0 8px;}
+  .form-section-label:first-child{margin-top:0;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:4px;}
   .form-grid.full{grid-template-columns:1fr;}
   .field{display:flex;flex-direction:column;gap:4px;}
   .field label{font-size:12px;color:var(--text-2);font-weight:500;}
+  .field .req{color:var(--red);}
   .field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--text);}
   .field textarea{resize:vertical;min-height:50px;}
-  .form-actions{display:flex;gap:8px;justify-content:flex-end;}
+  .form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
   th{text-align:left;font-weight:500;color:var(--text-2);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
   td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top;}
   tr:hover td{background:#fafaf8;}
   .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
   .b-open{background:var(--green-bg);color:var(--green-text);}
-  .b-filled{background:var(--accent-bg);color:var(--accent-text);}
-  .b-closed{background:#eee;color:var(--text-2);}
   .b-onhold{background:var(--amber-bg);color:var(--amber-text);}
+  .b-closed{background:#eee;color:var(--text-2);}
   .b-sourced{background:#eee;color:var(--text-2);}
   .b-screening{background:var(--accent-bg);color:var(--accent-text);}
   .b-submitted{background:#E6E0FB;color:#4B2E9E;}
   .b-clientinterview{background:var(--amber-bg);color:var(--amber-text);}
   .b-offer{background:#F0E7FB;color:#5B3B96;}
   .b-hired{background:var(--green-bg);color:var(--green-text);}
-  .b-onhold{background:#F3F1E8;color:#7A7460;}
   .b-rejected{background:var(--red-bg);color:var(--red-text);}
   .tag{display:inline-block;background:var(--accent-bg);color:var(--accent-text);font-size:11px;padding:2px 8px;border-radius:6px;margin:0 4px 4px 0;}
   .empty{text-align:center;color:var(--text-3);padding:40px 0;font-size:13px;}
+  .loading{text-align:center;color:var(--text-3);padding:40px 0;font-size:13px;}
   .link-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;padding:0;margin-right:10px;}
   .link-btn.danger{color:var(--red);}
   .count-pill{font-size:11px;color:var(--text-3);}
   .position-name{font-weight:500;}
   .muted{color:var(--text-3);}
-  .loading{text-align:center;color:var(--text-3);padding:40px 0;font-size:13px;}
+  .cv-link{font-size:12px;color:var(--accent);text-decoration:none;}
+  .cv-current{font-size:12px;color:var(--text-2);margin-top:4px;}
 </style>
 </head>
 <body>
@@ -80,13 +84,13 @@
     <div class="tab" data-tab="candidates">Kandidat</div>
   </div>
 
+  <!-- POSITIONS -->
   <div class="panel active" id="panel-positions">
     <div class="toolbar">
       <select class="filter" id="pos-filter">
         <option value="all">Semua status</option>
         <option value="open">Open</option>
         <option value="onhold">On hold</option>
-        <option value="filled">Filled</option>
         <option value="closed">Closed</option>
       </select>
       <button class="btn" id="btn-add-position">+ Tambah posisi</button>
@@ -94,22 +98,35 @@
 
     <div class="card" id="pos-form" style="display:none;">
       <div class="form-grid">
-        <div class="field"><label>Klien</label><input id="p-client" placeholder="nama perusahaan klien"/></div>
-        <div class="field"><label>Job title</label><input id="p-title" placeholder="misal: Finance Manager"/></div>
-        <div class="field"><label>Level</label><input id="p-level" placeholder="staff / manager / GM, dll"/></div>
-        <div class="field"><label>PIC MAJ</label><input id="p-pic" placeholder="siapa yang handle"/></div>
-        <div class="field"><label>Status</label>
+        <div class="field"><label>Position name <span class="req">*</span></label><input id="p-title" placeholder="misal: Finance Manager"/></div>
+        <div class="field"><label>Client <span class="req">*</span></label><input id="p-client" placeholder="nama perusahaan klien"/></div>
+        <div class="field"><label>Employment type</label>
+          <select id="p-employmentType">
+            <option value="">-</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Internship">Internship</option>
+          </select>
+        </div>
+        <div class="field"><label>Work location <span class="req">*</span></label><input id="p-workLocation" placeholder="Jakarta / Hybrid / Remote"/></div>
+        <div class="field"><label>Experience required <span class="req">*</span></label><input id="p-experienceRequired" placeholder="misal: 3-5 tahun"/></div>
+        <div class="field"><label>Salary range</label><input id="p-salaryRange" placeholder="misal: 15-20 juta"/></div>
+        <div class="field"><label>Number of hiring</label><input id="p-numberOfHiring" type="number" min="1" placeholder="1"/></div>
+        <div class="field"><label>PIC recruiter</label><input id="p-picRecruiter" placeholder="siapa yang handle"/></div>
+        <div class="field"><label>Status <span class="req">*</span></label>
           <select id="p-status">
             <option value="open">Open</option>
             <option value="onhold">On hold</option>
-            <option value="filled">Filled</option>
             <option value="closed">Closed</option>
           </select>
         </div>
-        <div class="field"><label>Target close</label><input id="p-deadline" type="date"/></div>
       </div>
       <div class="form-grid full">
-        <div class="field"><label>Catatan</label><textarea id="p-notes" placeholder="requirement khusus, fee agreement, dll"></textarea></div>
+        <div class="field"><label>Job description</label><textarea id="p-jobDescription" placeholder="ringkasan tanggung jawab"></textarea></div>
+        <div class="field"><label>Requirements</label><textarea id="p-requirements" placeholder="syarat wajib"></textarea></div>
+        <div class="field"><label>Required skills</label><input id="p-requiredSkills" placeholder="pisahkan koma"/></div>
+        <div class="field"><label>Preferred skills</label><input id="p-preferredSkills" placeholder="pisahkan koma, nice to have"/></div>
       </div>
       <div class="form-actions">
         <button class="btn secondary" id="p-cancel">Batal</button>
@@ -120,7 +137,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="pos-table">
         <thead><tr>
-          <th>Klien</th><th>Job title</th><th>Level</th><th>PIC</th><th>Status</th><th>Target close</th><th>Kandidat</th><th></th>
+          <th>Position</th><th>Client</th><th>Location</th><th>Type</th><th>Exp. req</th><th>Salary</th><th>Hiring</th><th>PIC</th><th>Status</th><th>Kandidat</th><th></th>
         </tr></thead>
         <tbody id="pos-tbody"></tbody>
       </table>
@@ -129,6 +146,7 @@
     </div>
   </div>
 
+  <!-- CANDIDATES -->
   <div class="panel" id="panel-candidates">
     <div class="toolbar">
       <select class="filter" id="cand-filter">
@@ -139,16 +157,10 @@
 
     <div class="card" id="cand-form" style="display:none;">
       <div class="form-grid">
-        <div class="field"><label>Nama kandidat</label><input id="c-name" placeholder="nama lengkap"/></div>
-        <div class="field"><label>Kontak</label><input id="c-contact" placeholder="no HP / email"/></div>
-        <div class="field"><label>Usia</label><input id="c-age" type="number" min="15" max="70" placeholder="misal: 32"/></div>
-        <div class="field"><label>Posisi terkait</label><select id="c-position"></select></div>
-        <div class="field"><label>Pengalaman (tahun)</label><input id="c-years" type="number" min="0" max="50" placeholder="misal: 5"/></div>
-        <div class="field"><label>Pendidikan</label><input id="c-education" placeholder="misal: S1 Akuntansi - UI"/></div>
-        <div class="field"><label>Perusahaan saat ini</label><input id="c-company" placeholder="nama perusahaan sekarang/terakhir"/></div>
-        <div class="field"><label>Jabatan saat ini</label><input id="c-title" placeholder="jabatan sekarang/terakhir"/></div>
-        <div class="field" style="grid-column:1/-1;"><label>Skill (pisahkan koma)</label><input id="c-skills" placeholder="misal: SAP, Excel, Financial Modeling"/></div>
-        <div class="field"><label>Stage</label>
+        <div class="field"><label>Nama kandidat <span class="req">*</span></label><input id="c-name" placeholder="nama lengkap"/></div>
+        <div class="field"><label>Kontak <span class="req">*</span></label><input id="c-contact" placeholder="no HP / email"/></div>
+        <div class="field"><label>Posisi <span class="req">*</span></label><select id="c-position"></select></div>
+        <div class="field"><label>Stage <span class="req">*</span></label>
           <select id="c-stage">
             <option value="sourced">Sourced</option>
             <option value="screening">Screening (internal)</option>
@@ -161,8 +173,30 @@
           </select>
         </div>
       </div>
+
+      <div class="form-section-label">Background</div>
+      <div class="form-grid">
+        <div class="field"><label>Current company <span class="req">*</span></label><input id="c-currentCompany" placeholder="perusahaan sekarang/terakhir"/></div>
+        <div class="field"><label>Current position <span class="req">*</span></label><input id="c-currentPosition" placeholder="jabatan sekarang/terakhir"/></div>
+        <div class="field"><label>Total working experience <span class="req">*</span></label><input id="c-totalExperience" placeholder="misal: 6 tahun"/></div>
+        <div class="field"><label>Related experience <span class="req">*</span></label><input id="c-relatedExperience" placeholder="misal: 4 tahun di bidang relevan"/></div>
+      </div>
+
+      <div class="form-section-label">Skill & ekspektasi</div>
+      <div class="form-grid">
+        <div class="field" style="grid-column:1/-1;"><label>Key skills <span class="req">*</span></label><input id="c-keySkills" placeholder="pisahkan koma, misal: SAP, Excel, Financial Modeling"/></div>
+        <div class="field"><label>Expected salary <span class="req">*</span></label><input id="c-expectedSalary" placeholder="misal: 18 juta"/></div>
+        <div class="field"><label>Notice period <span class="req">*</span></label><input id="c-noticePeriod" placeholder="misal: 1 bulan / bisa segera"/></div>
+      </div>
+
+      <div class="form-section-label">CV & catatan</div>
       <div class="form-grid full">
-        <div class="field"><label>Catatan</label><textarea id="c-notes" placeholder="hasil interview, ekspektasi gaji, alasan reject, dll"></textarea></div>
+        <div class="field">
+          <label>Upload CV <span class="req">*</span></label>
+          <input id="c-cvFile" type="file" accept=".pdf,.doc,.docx"/>
+          <div class="cv-current" id="c-cv-current"></div>
+        </div>
+        <div class="field"><label>Catatan</label><textarea id="c-notes" placeholder="hasil interview, alasan reject, dll"></textarea></div>
       </div>
       <div class="form-actions">
         <button class="btn secondary" id="c-cancel">Batal</button>
@@ -173,7 +207,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="cand-table">
         <thead><tr>
-          <th>Nama</th><th>Usia</th><th>Kontak</th><th>Posisi</th><th>Pengalaman</th><th>Background</th><th>Skill</th><th>Stage</th><th>Catatan</th><th></th>
+          <th>Nama</th><th>Kontak</th><th>Posisi</th><th>Stage</th><th>Current</th><th>Total exp</th><th>Related exp</th><th>Skills</th><th>Exp. salary</th><th>Notice</th><th>CV</th><th>Catatan</th><th></th>
         </tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
@@ -192,7 +226,7 @@ let candidates = [];
 let editingPosId = null;
 let editingCandId = null;
 
-const posStatusLabel = {open:"Open", onhold:"On hold", filled:"Filled", closed:"Closed"};
+const posStatusLabel = {open:"Open", onhold:"On hold", closed:"Closed"};
 const stageLabel = {sourced:"Sourced", screening:"Screening", submitted:"Submitted to client", clientinterview:"Client interview", offer:"Offer", hired:"Hired", onhold:"On hold", rejected:"Rejected"};
 
 function isConfigured(){
@@ -209,6 +243,15 @@ async function apiPost(action, payload){
     body: JSON.stringify({ action, ...payload })
   });
   return res.json();
+}
+
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 async function loadData(){
@@ -250,6 +293,11 @@ function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
+function tagList(str){
+  return (str||'').split(',').map(s=>s.trim()).filter(Boolean)
+    .map(s=>`<span class="tag">${escapeHtml(s)}</span>`).join('');
+}
+
 function renderPositions(){
   const tbody = document.getElementById('pos-tbody');
   const filter = document.getElementById('pos-filter').value;
@@ -258,12 +306,15 @@ function renderPositions(){
   tbody.innerHTML = rows.map(p => {
     const candCount = candidates.filter(c => c.positionId === p.id && c.stage !== 'rejected').length;
     return `<tr>
-      <td class="position-name">${escapeHtml(p.client)}</td>
-      <td>${escapeHtml(p.title)}</td>
-      <td>${escapeHtml(p.level)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(p.pic)||'<span class="muted">-</span>'}</td>
+      <td class="position-name">${escapeHtml(p.title)}</td>
+      <td>${escapeHtml(p.client)}</td>
+      <td>${escapeHtml(p.workLocation)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(p.employmentType)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(p.experienceRequired)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(p.salaryRange)||'<span class="muted">-</span>'}</td>
+      <td>${p.numberOfHiring||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(p.picRecruiter)||'<span class="muted">-</span>'}</td>
       <td><span class="badge b-${p.status}">${posStatusLabel[p.status]||p.status}</span></td>
-      <td>${p.deadline||'<span class="muted">-</span>'}</td>
       <td><span class="count-pill">${candCount} aktif</span></td>
       <td>
         <button class="link-btn" onclick="editPosition('${p.id}')">Edit</button>
@@ -281,19 +332,20 @@ function renderCandidates(){
   tbody.innerHTML = rows.map(c => {
     const pos = positions.find(p => p.id === c.positionId);
     const posLabel = pos ? `${escapeHtml(pos.client)} - ${escapeHtml(pos.title)}` : '<span class="muted">posisi dihapus</span>';
-    const background = [c.currentTitle, c.currentCompany].filter(Boolean).map(escapeHtml).join(' @ ');
-    const skillsHtml = (c.skills||'').split(',').map(s=>s.trim()).filter(Boolean)
-      .map(s=>`<span class="tag">${escapeHtml(s)}</span>`).join('');
+    const cvHtml = c.cvUrl ? `<a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">Lihat CV</a>` : '<span class="muted">-</span>';
     return `<tr>
       <td>${escapeHtml(c.name)}</td>
-      <td>${c.age||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(c.contact)||'<span class="muted">-</span>'}</td>
       <td>${posLabel}</td>
-      <td>${c.yearsExperience ? c.yearsExperience+' th' : '<span class="muted">-</span>'}</td>
-      <td style="max-width:160px;">${background||'<span class="muted">-</span>'}${c.education?`<br><span class="muted" style="font-size:11px;">${escapeHtml(c.education)}</span>`:''}</td>
-      <td style="max-width:180px;">${skillsHtml||'<span class="muted">-</span>'}</td>
       <td><span class="badge b-${c.stage}">${stageLabel[c.stage]||c.stage}</span></td>
-      <td style="max-width:180px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
+      <td style="max-width:150px;">${escapeHtml(c.currentPosition)||''}${c.currentPosition&&c.currentCompany?' @ ':''}${escapeHtml(c.currentCompany)||''}</td>
+      <td>${escapeHtml(c.totalExperience)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.relatedExperience)||'<span class="muted">-</span>'}</td>
+      <td style="max-width:180px;">${tagList(c.keySkills)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.expectedSalary)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.noticePeriod)||'<span class="muted">-</span>'}</td>
+      <td>${cvHtml}</td>
+      <td style="max-width:160px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
       <td>
         <button class="link-btn" onclick="editCandidate('${c.id}')">Edit</button>
         <button class="link-btn danger" onclick="deleteCandidate('${c.id}')">Hapus</button>
@@ -314,14 +366,14 @@ document.querySelectorAll('.tab').forEach(tab => {
 document.getElementById('pos-filter').addEventListener('change', renderPositions);
 document.getElementById('cand-filter').addEventListener('change', renderCandidates);
 
+// ---- POSITION FORM ----
 function resetPosForm(){
-  document.getElementById('p-client').value='';
-  document.getElementById('p-title').value='';
-  document.getElementById('p-level').value='';
-  document.getElementById('p-pic').value='';
+  ['title','client','workLocation','experienceRequired','salaryRange','numberOfHiring',
+   'picRecruiter','jobDescription','requirements','requiredSkills','preferredSkills'].forEach(f=>{
+    document.getElementById('p-'+f).value='';
+  });
+  document.getElementById('p-employmentType').value='';
   document.getElementById('p-status').value='open';
-  document.getElementById('p-deadline').value='';
-  document.getElementById('p-notes').value='';
   editingPosId = null;
 }
 document.getElementById('btn-add-position').addEventListener('click', () => {
@@ -333,16 +385,24 @@ document.getElementById('p-cancel').addEventListener('click', () => {
   document.getElementById('pos-form').style.display='none';
 });
 document.getElementById('p-save').addEventListener('click', async () => {
-  const client = document.getElementById('p-client').value.trim();
   const title = document.getElementById('p-title').value.trim();
-  if(!client || !title){ alert('Klien dan job title wajib diisi'); return; }
+  const client = document.getElementById('p-client').value.trim();
+  const workLocation = document.getElementById('p-workLocation').value.trim();
+  const experienceRequired = document.getElementById('p-experienceRequired').value.trim();
+  if(!title || !client || !workLocation || !experienceRequired){
+    alert('Position name, client, work location, dan experience required wajib diisi'); return;
+  }
   const data = {
-    client, title,
-    level: document.getElementById('p-level').value.trim(),
-    pic: document.getElementById('p-pic').value.trim(),
+    title, client, workLocation, experienceRequired,
+    employmentType: document.getElementById('p-employmentType').value,
+    salaryRange: document.getElementById('p-salaryRange').value.trim(),
+    numberOfHiring: document.getElementById('p-numberOfHiring').value,
+    picRecruiter: document.getElementById('p-picRecruiter').value.trim(),
     status: document.getElementById('p-status').value,
-    deadline: document.getElementById('p-deadline').value,
-    notes: document.getElementById('p-notes').value.trim(),
+    jobDescription: document.getElementById('p-jobDescription').value.trim(),
+    requirements: document.getElementById('p-requirements').value.trim(),
+    requiredSkills: document.getElementById('p-requiredSkills').value.trim(),
+    preferredSkills: document.getElementById('p-preferredSkills').value.trim(),
   };
   document.getElementById('p-save').disabled = true;
   try{
@@ -362,13 +422,19 @@ window.editPosition = function(id){
   const p = positions.find(x=>x.id===id);
   if(!p) return;
   editingPosId = id;
-  document.getElementById('p-client').value=p.client;
-  document.getElementById('p-title').value=p.title;
-  document.getElementById('p-level').value=p.level||'';
-  document.getElementById('p-pic').value=p.pic||'';
-  document.getElementById('p-status').value=p.status;
-  document.getElementById('p-deadline').value=p.deadline||'';
-  document.getElementById('p-notes').value=p.notes||'';
+  document.getElementById('p-title').value=p.title||'';
+  document.getElementById('p-client').value=p.client||'';
+  document.getElementById('p-employmentType').value=p.employmentType||'';
+  document.getElementById('p-workLocation').value=p.workLocation||'';
+  document.getElementById('p-experienceRequired').value=p.experienceRequired||'';
+  document.getElementById('p-salaryRange').value=p.salaryRange||'';
+  document.getElementById('p-numberOfHiring').value=p.numberOfHiring||'';
+  document.getElementById('p-picRecruiter').value=p.picRecruiter||'';
+  document.getElementById('p-status').value=p.status||'open';
+  document.getElementById('p-jobDescription').value=p.jobDescription||'';
+  document.getElementById('p-requirements').value=p.requirements||'';
+  document.getElementById('p-requiredSkills').value=p.requiredSkills||'';
+  document.getElementById('p-preferredSkills').value=p.preferredSkills||'';
   document.getElementById('pos-form').style.display='block';
   document.getElementById('pos-form').scrollIntoView({behavior:'smooth', block:'center'});
 };
@@ -378,18 +444,16 @@ window.deletePosition = async function(id){
   await loadData();
 };
 
+// ---- CANDIDATE FORM ----
 function resetCandForm(){
-  document.getElementById('c-name').value='';
-  document.getElementById('c-contact').value='';
-  document.getElementById('c-age').value='';
+  ['name','contact','currentCompany','currentPosition','totalExperience','relatedExperience',
+   'keySkills','expectedSalary','noticePeriod','notes'].forEach(f=>{
+    document.getElementById('c-'+f).value='';
+  });
   document.getElementById('c-position').value = positions[0]?.id || '';
-  document.getElementById('c-years').value='';
-  document.getElementById('c-education').value='';
-  document.getElementById('c-company').value='';
-  document.getElementById('c-title').value='';
-  document.getElementById('c-skills').value='';
   document.getElementById('c-stage').value='sourced';
-  document.getElementById('c-notes').value='';
+  document.getElementById('c-cvFile').value='';
+  document.getElementById('c-cv-current').innerHTML='';
   editingCandId = null;
 }
 document.getElementById('btn-add-candidate').addEventListener('click', () => {
@@ -403,22 +467,40 @@ document.getElementById('c-cancel').addEventListener('click', () => {
 });
 document.getElementById('c-save').addEventListener('click', async () => {
   const name = document.getElementById('c-name').value.trim();
-  if(!name){ alert('Nama kandidat wajib diisi'); return; }
+  const contact = document.getElementById('c-contact').value.trim();
+  const currentCompany = document.getElementById('c-currentCompany').value.trim();
+  const currentPosition = document.getElementById('c-currentPosition').value.trim();
+  const totalExperience = document.getElementById('c-totalExperience').value.trim();
+  const relatedExperience = document.getElementById('c-relatedExperience').value.trim();
+  const keySkills = document.getElementById('c-keySkills').value.trim();
+  const expectedSalary = document.getElementById('c-expectedSalary').value.trim();
+  const noticePeriod = document.getElementById('c-noticePeriod').value.trim();
+  const cvFile = document.getElementById('c-cvFile').files[0];
+
+  if(!name || !contact || !currentCompany || !currentPosition || !totalExperience ||
+     !relatedExperience || !keySkills || !expectedSalary || !noticePeriod){
+    alert('Semua field wajib (*) harus diisi'); return;
+  }
+  if(!editingCandId && !cvFile){
+    alert('Upload CV wajib untuk kandidat baru'); return;
+  }
+
   const data = {
-    name,
-    contact: document.getElementById('c-contact').value.trim(),
-    age: document.getElementById('c-age').value,
+    name, contact, currentCompany, currentPosition, totalExperience,
+    relatedExperience, keySkills, expectedSalary, noticePeriod,
     positionId: document.getElementById('c-position').value,
-    yearsExperience: document.getElementById('c-years').value,
-    education: document.getElementById('c-education').value.trim(),
-    currentCompany: document.getElementById('c-company').value.trim(),
-    currentTitle: document.getElementById('c-title').value.trim(),
-    skills: document.getElementById('c-skills').value.trim(),
     stage: document.getElementById('c-stage').value,
     notes: document.getElementById('c-notes').value.trim(),
   };
+
   document.getElementById('c-save').disabled = true;
+  document.getElementById('c-save').textContent = 'Menyimpan...';
   try{
+    if(cvFile){
+      data.cvBase64 = await fileToBase64(cvFile);
+      data.cvFileName = cvFile.name;
+      data.cvMimeType = cvFile.type;
+    }
     if(editingCandId){
       await apiPost('updateCandidate', { id: editingCandId, data });
     } else {
@@ -430,22 +512,28 @@ document.getElementById('c-save').addEventListener('click', async () => {
     alert('Gagal menyimpan. Coba lagi.');
   }
   document.getElementById('c-save').disabled = false;
+  document.getElementById('c-save').textContent = 'Simpan';
 });
 window.editCandidate = function(id){
   const c = candidates.find(x=>x.id===id);
   if(!c) return;
   editingCandId = id;
-  document.getElementById('c-name').value=c.name;
+  document.getElementById('c-name').value=c.name||'';
   document.getElementById('c-contact').value=c.contact||'';
-  document.getElementById('c-age').value=c.age||'';
   document.getElementById('c-position').value=c.positionId;
-  document.getElementById('c-years').value=c.yearsExperience||'';
-  document.getElementById('c-education').value=c.education||'';
-  document.getElementById('c-company').value=c.currentCompany||'';
-  document.getElementById('c-title').value=c.currentTitle||'';
-  document.getElementById('c-skills').value=c.skills||'';
   document.getElementById('c-stage').value=c.stage;
+  document.getElementById('c-currentCompany').value=c.currentCompany||'';
+  document.getElementById('c-currentPosition').value=c.currentPosition||'';
+  document.getElementById('c-totalExperience').value=c.totalExperience||'';
+  document.getElementById('c-relatedExperience').value=c.relatedExperience||'';
+  document.getElementById('c-keySkills').value=c.keySkills||'';
+  document.getElementById('c-expectedSalary').value=c.expectedSalary||'';
+  document.getElementById('c-noticePeriod').value=c.noticePeriod||'';
   document.getElementById('c-notes').value=c.notes||'';
+  document.getElementById('c-cvFile').value='';
+  document.getElementById('c-cv-current').innerHTML = c.cvUrl
+    ? `CV saat ini: <a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">lihat</a> (upload file baru untuk mengganti)`
+    : '';
   document.getElementById('cand-form').style.display='block';
   document.getElementById('cand-form').scrollIntoView({behavior:'smooth', block:'center'});
 };
