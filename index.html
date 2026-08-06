@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracker Posisi & Kandidat - MAJ</title>
+<style>
+  :root{
+    --bg:#f7f6f2; --card:#ffffff; --border:#e2e0d8; --border-strong:#c9c6ba;
+    --text:#1f1e1b; --text-2:#6b6a63; --text-3:#9a988e;
+    --accent:#378ADD; --accent-bg:#E6F1FB; --accent-text:#0C447C;
+    --green:#639922; --green-bg:#EAF3DE; --green-text:#27500A;
+    --amber:#BA7517; --amber-bg:#FAEEDA; --amber-text:#633806;
+    --red:#A32D2D; --red-bg:#FCEBEB; --red-text:#791F1F;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 60px;}
+  h1{font-size:20px;font-weight:600;margin:0 0 4px;}
+  .sub{color:var(--text-2);font-size:13px;margin:0 0 20px;}
+  .setup-banner{background:var(--amber-bg);color:var(--amber-text);border:1px solid #e8c98a;border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:16px;}
+  .setup-banner code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px;}
+  .tabs{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--border);}
+  .tab{padding:10px 16px;font-size:14px;font-weight:500;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;user-select:none;}
+  .tab.active{color:var(--accent-text);border-bottom-color:var(--accent);}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+  .btn{background:var(--accent);color:#fff;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;}
+  .btn:hover{opacity:.9;}
+  .btn.secondary{background:#fff;color:var(--text);border:1px solid var(--border-strong);}
+  select.filter{padding:8px 10px;border-radius:8px;border:1px solid var(--border-strong);font-size:13px;background:#fff;color:var(--text);}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:12px;}
+  .form-grid.full{grid-template-columns:1fr;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:12px;color:var(--text-2);font-weight:500;}
+  .field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--text);}
+  .field textarea{resize:vertical;min-height:50px;}
+  .form-actions{display:flex;gap:8px;justify-content:flex-end;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-weight:500;color:var(--text-2);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr:hover td{background:#fafaf8;}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
+  .b-open{background:var(--green-bg);color:var(--green-text);}
+  .b-filled{background:var(--accent-bg);color:var(--accent-text);}
+  .b-closed{background:#eee;color:var(--text-2);}
+  .b-onhold{background:var(--amber-bg);color:var(--amber-text);}
+  .b-sourced{background:#eee;color:var(--text-2);}
+  .b-screening{background:var(--accent-bg);color:var(--accent-text);}
+  .b-interview{background:var(--amber-bg);color:var(--amber-text);}
+  .b-offer{background:#F0E7FB;color:#5B3B96;}
+  .b-hired{background:var(--green-bg);color:var(--green-text);}
+  .b-rejected{background:var(--red-bg);color:var(--red-text);}
+  .empty{text-align:center;color:var(--text-3);padding:40px 0;font-size:13px;}
+  .link-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;padding:0;margin-right:10px;}
+  .link-btn.danger{color:var(--red);}
+  .count-pill{font-size:11px;color:var(--text-3);}
+  .position-name{font-weight:500;}
+  .muted{color:var(--text-3);}
+  .loading{text-align:center;color:var(--text-3);padding:40px 0;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Tracker Posisi & Kandidat</h1>
+  <p class="sub">Tiba-Tiba Kerja &mdash; open position & candidate pipeline, data tersimpan di Google Sheets kamu</p>
+
+  <div class="setup-banner" id="setup-banner">
+    ⚠️ Belum konek ke Google Sheets. Isi <code>APPS_SCRIPT_URL</code> di file index.html dengan URL Web App dari Apps Script kamu (lihat README_SETUP.md).
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="positions">Open Positions</div>
+    <div class="tab" data-tab="candidates">Kandidat</div>
+  </div>
+
+  <div class="panel active" id="panel-positions">
+    <div class="toolbar">
+      <select class="filter" id="pos-filter">
+        <option value="all">Semua status</option>
+        <option value="open">Open</option>
+        <option value="onhold">On hold</option>
+        <option value="filled">Filled</option>
+        <option value="closed">Closed</option>
+      </select>
+      <button class="btn" id="btn-add-position">+ Tambah posisi</button>
+    </div>
+
+    <div class="card" id="pos-form" style="display:none;">
+      <div class="form-grid">
+        <div class="field"><label>Klien</label><input id="p-client" placeholder="nama perusahaan klien"/></div>
+        <div class="field"><label>Job title</label><input id="p-title" placeholder="misal: Finance Manager"/></div>
+        <div class="field"><label>Level</label><input id="p-level" placeholder="staff / manager / GM, dll"/></div>
+        <div class="field"><label>PIC MAJ</label><input id="p-pic" placeholder="siapa yang handle"/></div>
+        <div class="field"><label>Status</label>
+          <select id="p-status">
+            <option value="open">Open</option>
+            <option value="onhold">On hold</option>
+            <option value="filled">Filled</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+        <div class="field"><label>Target close</label><input id="p-deadline" type="date"/></div>
+      </div>
+      <div class="form-grid full">
+        <div class="field"><label>Catatan</label><textarea id="p-notes" placeholder="requirement khusus, fee agreement, dll"></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn secondary" id="p-cancel">Batal</button>
+        <button class="btn" id="p-save">Simpan</button>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow-x:auto;">
+      <table id="pos-table">
+        <thead><tr>
+          <th>Klien</th><th>Job title</th><th>Level</th><th>PIC</th><th>Status</th><th>Target close</th><th>Kandidat</th><th></th>
+        </tr></thead>
+        <tbody id="pos-tbody"></tbody>
+      </table>
+      <div class="empty" id="pos-empty" style="display:none;">Belum ada posisi. Klik "Tambah posisi" untuk mulai.</div>
+      <div class="loading" id="pos-loading">Memuat data...</div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-candidates">
+    <div class="toolbar">
+      <select class="filter" id="cand-filter">
+        <option value="all">Semua posisi</option>
+      </select>
+      <button class="btn" id="btn-add-candidate">+ Tambah kandidat</button>
+    </div>
+
+    <div class="card" id="cand-form" style="display:none;">
+      <div class="form-grid">
+        <div class="field"><label>Nama kandidat</label><input id="c-name" placeholder="nama lengkap"/></div>
+        <div class="field"><label>Kontak</label><input id="c-contact" placeholder="no HP / email"/></div>
+        <div class="field"><label>Posisi terkait</label><select id="c-position"></select></div>
+        <div class="field"><label>Stage</label>
+          <select id="c-stage">
+            <option value="sourced">Sourced</option>
+            <option value="screening">Screening</option>
+            <option value="interview">Interview</option>
+            <option value="offer">Offer</option>
+            <option value="hired">Hired</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid full">
+        <div class="field"><label>Catatan</label><textarea id="c-notes" placeholder="hasil interview, ekspektasi gaji, dll"></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn secondary" id="c-cancel">Batal</button>
+        <button class="btn" id="c-save">Simpan</button>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow-x:auto;">
+      <table id="cand-table">
+        <thead><tr>
+          <th>Nama</th><th>Kontak</th><th>Posisi</th><th>Stage</th><th>Catatan</th><th></th>
+        </tr></thead>
+        <tbody id="cand-tbody"></tbody>
+      </table>
+      <div class="empty" id="cand-empty" style="display:none;">Belum ada kandidat.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==== GANTI DENGAN URL WEB APP APPS SCRIPT KAMU (lihat README_SETUP.md) ====
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5vKczN3OgBNNzJxZ2H23Z1OkYcJCc8oAq7A3TE_31SAJkq2aVmGikaIk2WOCXwKE/exec";
+// =============================================================================
+
+let positions = [];
+let candidates = [];
+let editingPosId = null;
+let editingCandId = null;
+
+const posStatusLabel = {open:"Open", onhold:"On hold", filled:"Filled", closed:"Closed"};
+const stageLabel = {sourced:"Sourced", screening:"Screening", interview:"Interview", offer:"Offer", hired:"Hired", rejected:"Rejected"};
+
+function isConfigured(){
+  return APPS_SCRIPT_URL && APPS_SCRIPT_URL.startsWith('http');
+}
+
+async function apiGetAll(){
+  const res = await fetch(APPS_SCRIPT_URL);
+  return res.json();
+}
+async function apiPost(action, payload){
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action, ...payload })
+  });
+  return res.json();
+}
+
+async function loadData(){
+  if(!isConfigured()){
+    document.getElementById('pos-loading').style.display = 'none';
+    return;
+  }
+  document.getElementById('setup-banner').style.display = 'none';
+  try{
+    const data = await apiGetAll();
+    positions = data.positions || [];
+    candidates = data.candidates || [];
+  }catch(e){
+    document.getElementById('pos-loading').textContent = 'Gagal memuat data. Cek koneksi / URL Apps Script.';
+    return;
+  }
+  document.getElementById('pos-loading').style.display = 'none';
+  renderAll();
+}
+
+function renderAll(){
+  renderPositions();
+  renderCandidates();
+  renderPositionOptions();
+}
+
+function renderPositionOptions(){
+  const filterSel = document.getElementById('cand-filter');
+  const formSel = document.getElementById('c-position');
+  const currentFilter = filterSel.value;
+  filterSel.innerHTML = '<option value="all">Semua posisi</option>' +
+    positions.map(p => `<option value="${p.id}">${escapeHtml(p.client)} - ${escapeHtml(p.title)}</option>`).join('');
+  filterSel.value = currentFilter && [...filterSel.options].some(o=>o.value===currentFilter) ? currentFilter : 'all';
+  formSel.innerHTML = positions.map(p => `<option value="${p.id}">${escapeHtml(p.client)} - ${escapeHtml(p.title)}</option>`).join('');
+}
+
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderPositions(){
+  const tbody = document.getElementById('pos-tbody');
+  const filter = document.getElementById('pos-filter').value;
+  let rows = positions.filter(p => filter==='all' || p.status===filter);
+  document.getElementById('pos-empty').style.display = rows.length ? 'none' : 'block';
+  tbody.innerHTML = rows.map(p => {
+    const candCount = candidates.filter(c => c.positionId === p.id && c.stage !== 'rejected').length;
+    return `<tr>
+      <td class="position-name">${escapeHtml(p.client)}</td>
+      <td>${escapeHtml(p.title)}</td>
+      <td>${escapeHtml(p.level)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(p.pic)||'<span class="muted">-</span>'}</td>
+      <td><span class="badge b-${p.status}">${posStatusLabel[p.status]||p.status}</span></td>
+      <td>${p.deadline||'<span class="muted">-</span>'}</td>
+      <td><span class="count-pill">${candCount} aktif</span></td>
+      <td>
+        <button class="link-btn" onclick="editPosition('${p.id}')">Edit</button>
+        <button class="link-btn danger" onclick="deletePosition('${p.id}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCandidates(){
+  const tbody = document.getElementById('cand-tbody');
+  const filter = document.getElementById('cand-filter').value;
+  let rows = candidates.filter(c => filter==='all' || c.positionId===filter);
+  document.getElementById('cand-empty').style.display = rows.length ? 'none' : 'block';
+  tbody.innerHTML = rows.map(c => {
+    const pos = positions.find(p => p.id === c.positionId);
+    const posLabel = pos ? `${escapeHtml(pos.client)} - ${escapeHtml(pos.title)}` : '<span class="muted">posisi dihapus</span>';
+    return `<tr>
+      <td>${escapeHtml(c.name)}</td>
+      <td>${escapeHtml(c.contact)||'<span class="muted">-</span>'}</td>
+      <td>${posLabel}</td>
+      <td><span class="badge b-${c.stage}">${stageLabel[c.stage]||c.stage}</span></td>
+      <td style="max-width:220px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
+      <td>
+        <button class="link-btn" onclick="editCandidate('${c.id}')">Edit</button>
+        <button class="link-btn danger" onclick="deleteCandidate('${c.id}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+  });
+});
+
+document.getElementById('pos-filter').addEventListener('change', renderPositions);
+document.getElementById('cand-filter').addEventListener('change', renderCandidates);
+
+function resetPosForm(){
+  document.getElementById('p-client').value='';
+  document.getElementById('p-title').value='';
+  document.getElementById('p-level').value='';
+  document.getElementById('p-pic').value='';
+  document.getElementById('p-status').value='open';
+  document.getElementById('p-deadline').value='';
+  document.getElementById('p-notes').value='';
+  editingPosId = null;
+}
+document.getElementById('btn-add-position').addEventListener('click', () => {
+  if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html, lihat README_SETUP.md'); return; }
+  resetPosForm();
+  document.getElementById('pos-form').style.display='block';
+});
+document.getElementById('p-cancel').addEventListener('click', () => {
+  document.getElementById('pos-form').style.display='none';
+});
+document.getElementById('p-save').addEventListener('click', async () => {
+  const client = document.getElementById('p-client').value.trim();
+  const title = document.getElementById('p-title').value.trim();
+  if(!client || !title){ alert('Klien dan job title wajib diisi'); return; }
+  const data = {
+    client, title,
+    level: document.getElementById('p-level').value.trim(),
+    pic: document.getElementById('p-pic').value.trim(),
+    status: document.getElementById('p-status').value,
+    deadline: document.getElementById('p-deadline').value,
+    notes: document.getElementById('p-notes').value.trim(),
+  };
+  document.getElementById('p-save').disabled = true;
+  try{
+    if(editingPosId){
+      await apiPost('updatePosition', { id: editingPosId, data });
+    } else {
+      await apiPost('addPosition', { data });
+    }
+    await loadData();
+    document.getElementById('pos-form').style.display='none';
+  }catch(e){
+    alert('Gagal menyimpan. Coba lagi.');
+  }
+  document.getElementById('p-save').disabled = false;
+});
+window.editPosition = function(id){
+  const p = positions.find(x=>x.id===id);
+  if(!p) return;
+  editingPosId = id;
+  document.getElementById('p-client').value=p.client;
+  document.getElementById('p-title').value=p.title;
+  document.getElementById('p-level').value=p.level||'';
+  document.getElementById('p-pic').value=p.pic||'';
+  document.getElementById('p-status').value=p.status;
+  document.getElementById('p-deadline').value=p.deadline||'';
+  document.getElementById('p-notes').value=p.notes||'';
+  document.getElementById('pos-form').style.display='block';
+  document.getElementById('pos-form').scrollIntoView({behavior:'smooth', block:'center'});
+};
+window.deletePosition = async function(id){
+  if(!confirm('Hapus posisi ini?')) return;
+  await apiPost('deletePosition', { id });
+  await loadData();
+};
+
+function resetCandForm(){
+  document.getElementById('c-name').value='';
+  document.getElementById('c-contact').value='';
+  document.getElementById('c-position').value = positions[0]?.id || '';
+  document.getElementById('c-stage').value='sourced';
+  document.getElementById('c-notes').value='';
+  editingCandId = null;
+}
+document.getElementById('btn-add-candidate').addEventListener('click', () => {
+  if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html, lihat README_SETUP.md'); return; }
+  if(positions.length===0){ alert('Tambahkan posisi dulu sebelum input kandidat.'); return; }
+  resetCandForm();
+  document.getElementById('cand-form').style.display='block';
+});
+document.getElementById('c-cancel').addEventListener('click', () => {
+  document.getElementById('cand-form').style.display='none';
+});
+document.getElementById('c-save').addEventListener('click', async () => {
+  const name = document.getElementById('c-name').value.trim();
+  if(!name){ alert('Nama kandidat wajib diisi'); return; }
+  const data = {
+    name,
+    contact: document.getElementById('c-contact').value.trim(),
+    positionId: document.getElementById('c-position').value,
+    stage: document.getElementById('c-stage').value,
+    notes: document.getElementById('c-notes').value.trim(),
+  };
+  document.getElementById('c-save').disabled = true;
+  try{
+    if(editingCandId){
+      await apiPost('updateCandidate', { id: editingCandId, data });
+    } else {
+      await apiPost('addCandidate', { data });
+    }
+    await loadData();
+    document.getElementById('cand-form').style.display='none';
+  }catch(e){
+    alert('Gagal menyimpan. Coba lagi.');
+  }
+  document.getElementById('c-save').disabled = false;
+});
+window.editCandidate = function(id){
+  const c = candidates.find(x=>x.id===id);
+  if(!c) return;
+  editingCandId = id;
+  document.getElementById('c-name').value=c.name;
+  document.getElementById('c-contact').value=c.contact||'';
+  document.getElementById('c-position').value=c.positionId;
+  document.getElementById('c-stage').value=c.stage;
+  document.getElementById('c-notes').value=c.notes||'';
+  document.getElementById('cand-form').style.display='block';
+  document.getElementById('cand-form').scrollIntoView({behavior:'smooth', block:'center'});
+};
+window.deleteCandidate = async function(id){
+  if(!confirm('Hapus kandidat ini?')) return;
+  await apiPost('deleteCandidate', { id });
+  await loadData();
+};
+
+loadData();
+</script>
+</body>
+</html>
