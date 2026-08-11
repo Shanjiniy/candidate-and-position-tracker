@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tracker Posisi & Kandidat - MAJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#f7f6f2; --card:#ffffff; --border:#e2e0d8; --border-strong:#c9c6ba;
@@ -15,7 +18,7 @@
     --radius:10px;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Poppins',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
   .wrap{max-width:1200px;margin:0 auto;padding:24px 20px 60px;}
   h1{font-size:20px;font-weight:600;margin:0 0 4px;}
   .sub{color:var(--text-2);font-size:13px;margin:0 0 20px;}
@@ -68,6 +71,17 @@
   .muted{color:var(--text-3);}
   .cv-link{font-size:12px;color:var(--accent);text-decoration:none;}
   .cv-current{font-size:12px;color:var(--text-2);margin-top:4px;}
+  .inline-select{padding:3px 6px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--border-strong);background:#fff;color:var(--text);cursor:pointer;}
+  .inline-select.b-open{background:var(--green-bg);color:var(--green-text);border-color:transparent;}
+  .inline-select.b-onhold{background:var(--amber-bg);color:var(--amber-text);border-color:transparent;}
+  .inline-select.b-closed{background:#eee;color:var(--text-2);border-color:transparent;}
+  .inline-select.b-sourced{background:#eee;color:var(--text-2);border-color:transparent;}
+  .inline-select.b-screening{background:var(--accent-bg);color:var(--accent-text);border-color:transparent;}
+  .inline-select.b-submitted{background:#E6E0FB;color:#4B2E9E;border-color:transparent;}
+  .inline-select.b-clientinterview{background:var(--amber-bg);color:var(--amber-text);border-color:transparent;}
+  .inline-select.b-offer{background:#F0E7FB;color:#5B3B96;border-color:transparent;}
+  .inline-select.b-hired{background:var(--green-bg);color:var(--green-text);border-color:transparent;}
+  .inline-select.b-rejected{background:var(--red-bg);color:var(--red-text);border-color:transparent;}
 </style>
 </head>
 <body>
@@ -314,7 +328,13 @@ function renderPositions(){
       <td>${escapeHtml(p.salaryRange)||'<span class="muted">-</span>'}</td>
       <td>${p.numberOfHiring||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(p.picRecruiter)||'<span class="muted">-</span>'}</td>
-      <td><span class="badge b-${p.status}">${posStatusLabel[p.status]||p.status}</span></td>
+      <td>
+        <select class="inline-select b-${p.status}" onchange="quickUpdatePositionStatus('${p.id}', this.value, this)">
+          <option value="open" ${p.status==='open'?'selected':''}>Open</option>
+          <option value="onhold" ${p.status==='onhold'?'selected':''}>On hold</option>
+          <option value="closed" ${p.status==='closed'?'selected':''}>Closed</option>
+        </select>
+      </td>
       <td><span class="count-pill">${candCount} aktif</span></td>
       <td>
         <button class="link-btn" onclick="editPosition('${p.id}')">Edit</button>
@@ -337,7 +357,11 @@ function renderCandidates(){
       <td>${escapeHtml(c.name)}</td>
       <td>${escapeHtml(c.contact)||'<span class="muted">-</span>'}</td>
       <td>${posLabel}</td>
-      <td><span class="badge b-${c.stage}">${stageLabel[c.stage]||c.stage}</span></td>
+      <td>
+        <select class="inline-select b-${c.stage}" onchange="quickUpdateCandidateStage('${c.id}', this.value, this)">
+          ${Object.keys(stageLabel).map(s=>`<option value="${s}" ${c.stage===s?'selected':''}>${stageLabel[s]}</option>`).join('')}
+        </select>
+      </td>
       <td style="max-width:150px;">${escapeHtml(c.currentPosition)||''}${c.currentPosition&&c.currentCompany?' @ ':''}${escapeHtml(c.currentCompany)||''}</td>
       <td>${escapeHtml(c.totalExperience)||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(c.relatedExperience)||'<span class="muted">-</span>'}</td>
@@ -442,6 +466,38 @@ window.deletePosition = async function(id){
   if(!confirm('Hapus posisi ini?')) return;
   await apiPost('deletePosition', { id });
   await loadData();
+};
+
+window.quickUpdatePositionStatus = async function(id, newStatus, selectEl){
+  const oldClass = [...selectEl.classList].find(c=>c.startsWith('b-'));
+  selectEl.classList.remove(oldClass);
+  selectEl.classList.add('b-'+newStatus);
+  selectEl.disabled = true;
+  try{
+    await apiPost('updatePosition', { id, data: { status: newStatus } });
+    const p = positions.find(x=>x.id===id);
+    if(p) p.status = newStatus;
+  }catch(e){
+    alert('Gagal update status. Coba lagi.');
+    await loadData();
+  }
+  selectEl.disabled = false;
+};
+
+window.quickUpdateCandidateStage = async function(id, newStage, selectEl){
+  const oldClass = [...selectEl.classList].find(c=>c.startsWith('b-'));
+  selectEl.classList.remove(oldClass);
+  selectEl.classList.add('b-'+newStage);
+  selectEl.disabled = true;
+  try{
+    await apiPost('updateCandidate', { id, data: { stage: newStage } });
+    const c = candidates.find(x=>x.id===id);
+    if(c) c.stage = newStage;
+  }catch(e){
+    alert('Gagal update stage. Coba lagi.');
+    await loadData();
+  }
+  selectEl.disabled = false;
 };
 
 // ---- CANDIDATE FORM ----
