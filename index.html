@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Temu Kerja Tracker - MAJ</title>
+<title>Tracker Posisi & Kandidat - MAJ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,6 +15,7 @@
     --green:#4C8A4C; --green-bg:#E4F3E4; --green-text:#1F4D1F;
     --amber:#B5791A; --amber-bg:#FBEFD9; --amber-text:#5C3B0A;
     --red:#B03A3A; --red-bg:#FBE7E7; --red-text:#6B1F1F;
+    --gray-bg:#EEF1F5; --gray-text:#556070;
     --radius:10px;
   }
   *{box-sizing:border-box;font-family:'Poppins',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
@@ -24,7 +25,7 @@
   .sub{color:var(--text-2);font-size:13px;margin:0 0 20px;}
   .setup-banner{background:var(--amber-bg);color:var(--amber-text);border:1px solid #e8c98a;border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:16px;}
   .setup-banner code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px;}
-  .tabs{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--border);}
+  .tabs{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:5;padding-top:4px;}
   .tab{padding:10px 16px;font-size:14px;font-weight:500;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;user-select:none;}
   .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
   .panel{display:none;}
@@ -46,8 +47,8 @@
   .field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;background:#fff;color:var(--text);}
   .field textarea{resize:vertical;min-height:50px;}
   .form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
-  table{width:100%;min-width:1500px;border-collapse:collapse;font-size:13px;}
-  th{text-align:left;font-weight:600;color:var(--text-2);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-weight:600;color:var(--text-2);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;background:var(--card);}
   td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top;}
   tr:hover td{background:#F5F9FE;}
   .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
@@ -61,12 +62,17 @@
   .b-offer{background:#F0E7FB;color:#5B3B96;}
   .b-hired{background:var(--green-bg);color:var(--green-text);}
   .b-rejected{background:var(--red-bg);color:var(--red-text);}
+  .b-active{background:var(--accent-bg);color:var(--accent-text);}
+  .b-withdrawn{background:var(--gray-bg);color:var(--gray-text);}
+  .b-high{background:var(--red-bg);color:var(--red-text);}
+  .b-medium{background:var(--amber-bg);color:var(--amber-text);}
+  .b-low{background:var(--green-bg);color:var(--green-text);}
   .tag{display:inline-block;background:var(--accent-bg);color:var(--accent-text);font-size:11px;padding:2px 8px;border-radius:6px;margin:0 4px 4px 0;}
   .empty{text-align:center;color:var(--text-3);padding:40px 0;font-size:13px;}
   .loading{text-align:center;color:var(--text-3);padding:40px 0;font-size:13px;}
-  .link-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;padding:0;margin-right:10px;}
+  .link-btn{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;padding:0;margin-right:10px;text-decoration:underline;}
   .link-btn.danger{color:var(--red);}
-  .count-pill{font-size:11px;color:var(--text-3);}
+  .count-pill{font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline;background:none;border:none;font-weight:600;}
   .position-name{font-weight:500;}
   .muted{color:var(--text-3);}
   .cv-link{font-size:12px;color:var(--accent);text-decoration:none;}
@@ -82,31 +88,57 @@
   .inline-select.b-offer{background:#F0E7FB;color:#5B3B96;border-color:transparent;}
   .inline-select.b-hired{background:var(--green-bg);color:var(--green-text);border-color:transparent;}
   .inline-select.b-rejected{background:var(--red-bg);color:var(--red-text);border-color:transparent;}
-  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;}
-  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:0 1px 2px rgba(15,42,74,0.04);}
-  .stat-num{font-size:28px;font-weight:700;color:var(--accent);}
+  .inline-select.b-active{background:var(--accent-bg);color:var(--accent-text);border-color:transparent;}
+  .inline-select.b-withdrawn{background:var(--gray-bg);color:var(--gray-text);border-color:transparent;}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:0 1px 2px rgba(15,42,74,0.04);}
+  .stat-num{font-size:26px;font-weight:700;color:var(--accent);}
   .stat-label{font-size:12px;color:var(--text-2);margin-top:4px;}
-  .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
   .breakdown-row:last-child{border-bottom:none;}
   .breakdown-bar-wrap{flex:1;margin:0 12px;background:var(--accent-bg);border-radius:6px;height:8px;overflow:hidden;}
   .breakdown-bar{height:100%;background:var(--accent);}
   .dash-col-title{font-size:14px;font-weight:600;margin:0 0 12px;color:var(--text);}
   .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .maint-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .maint-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
   .maint-add-row{display:flex;gap:8px;margin-bottom:12px;}
   .maint-add-row input{flex:1;}
   .maint-list-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
   .maint-list-item:last-child{border-bottom:none;}
-  @media (max-width:900px){.dash-grid,.maint-grid{grid-template-columns:1fr;}}
+  .aging-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .aging-box{border-radius:8px;padding:14px;text-align:center;}
+  .aging-box.ok{background:var(--green-bg);color:var(--green-text);}
+  .aging-box.warn{background:var(--amber-bg);color:var(--amber-text);}
+  .aging-box.bad{background:var(--red-bg);color:var(--red-text);}
+  .aging-num{font-size:24px;font-weight:700;}
+  .aging-label{font-size:12px;margin-top:4px;}
+  .followup-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .followup-item:last-child{border-bottom:none;}
+  .followup-item.overdue{color:var(--red);}
+  .attention-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .attention-item:last-child{border-bottom:none;}
+  .attention-title{font-weight:600;}
+  .attention-reasons{color:var(--text-2);font-size:12px;margin-top:2px;}
+  .workload-table th, .workload-table td{font-size:12px;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,42,74,0.45);z-index:100;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.active{display:flex;}
+  .modal-box{background:#fff;border-radius:12px;max-width:600px;width:100%;max-height:85vh;overflow-y:auto;padding:22px;}
+  .modal-box h3{margin:0 0 14px;font-size:16px;color:var(--text);}
+  .modal-close{float:right;background:none;border:none;font-size:18px;color:var(--text-2);cursor:pointer;}
+  .detail-row{display:flex;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .detail-row:last-child{border-bottom:none;}
+  .detail-label{width:160px;color:var(--text-2);flex-shrink:0;}
+  .detail-value{color:var(--text);}
+  @media (max-width:1000px){.dash-grid,.maint-grid,.aging-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Tracker Posisi & Kandidat</h1>
-  <p class="sub">Temu Kerja &mdash; open position & candidate pipeline, data tersimpan di Google Sheets kamu</p>
+  <p class="sub">Tiba-Tiba Kerja &mdash; open position & candidate pipeline, data tersimpan di Google Sheets kamu</p>
 
   <div class="setup-banner" id="setup-banner">
-    Belum konek ke Google Sheets. Isi <code>APPS_SCRIPT_URL</code> di file index.html dengan URL Web App dari Apps Script kamu (lihat README_SETUP.md).
+    Belum konek ke Google Sheets. Isi <code>APPS_SCRIPT_URL</code> di file index.html dengan URL Web App dari Apps Script kamu.
   </div>
 
   <div class="tabs">
@@ -124,24 +156,53 @@
         <div id="dash-pos-status"></div>
       </div>
       <div class="card">
-        <p class="dash-col-title">Candidates by Stage</p>
-        <div id="dash-cand-stage"></div>
+        <p class="dash-col-title">Candidate Funnel</p>
+        <div id="dash-funnel"></div>
       </div>
     </div>
     <div class="card">
-      <p class="dash-col-title">Posisi dengan kandidat paling sedikit (perlu sourcing)</p>
-      <div id="dash-low-candidates"></div>
+      <p class="dash-col-title">Open Position Aging</p>
+      <div class="aging-grid" id="dash-aging"></div>
+    </div>
+    <div class="dash-grid">
+      <div class="card">
+        <p class="dash-col-title">Follow Up Today</p>
+        <div id="dash-followup"></div>
+      </div>
+      <div class="card">
+        <p class="dash-col-title">Positions Needing Attention</p>
+        <div id="dash-attention"></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="dash-col-title">Recruiter Workload</p>
+      <div style="overflow-x:auto;">
+        <table class="workload-table">
+          <thead><tr><th>Recruiter</th><th>Open Jobs</th><th>Candidates</th><th>Submitted</th><th>Interview</th><th>Hired</th></tr></thead>
+          <tbody id="dash-workload"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <div class="panel" id="panel-positions">
     <div class="toolbar">
-      <select class="filter" id="pos-filter">
-        <option value="all">Semua status</option>
-        <option value="open">Open</option>
-        <option value="onhold">On hold</option>
-        <option value="closed">Closed</option>
-      </select>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select class="filter" id="pos-filter-status">
+          <option value="all">Semua status</option>
+          <option value="open">Open</option>
+          <option value="onhold">On hold</option>
+          <option value="closed">Closed</option>
+        </select>
+        <select class="filter" id="pos-filter-client"><option value="all">Semua client</option></select>
+        <select class="filter" id="pos-filter-pic"><option value="all">Semua PIC</option></select>
+        <select class="filter" id="pos-filter-priority">
+          <option value="all">Semua priority</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
       <button class="btn" id="btn-add-position">+ Tambah posisi</button>
     </div>
 
@@ -152,17 +213,34 @@
         <div class="field"><label>Employment type</label>
           <select id="p-employmentType">
             <option value="">-</option>
-            <option value="Full-time">Full-time</option>
+            <option value="Permanent">Permanent</option>
             <option value="Contract">Contract</option>
-            <option value="Part-time">Part-time</option>
+            <option value="Freelance">Freelance</option>
             <option value="Internship">Internship</option>
           </select>
         </div>
-        <div class="field"><label>Work location <span class="req">*</span></label><input id="p-workLocation" placeholder="Jakarta / Hybrid / Remote"/></div>
+        <div class="field"><label>Work arrangement</label>
+          <select id="p-workArrangement">
+            <option value="">-</option>
+            <option value="WFO">WFO</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="Remote">Remote</option>
+          </select>
+        </div>
+        <div class="field"><label>Work location <span class="req">*</span></label><input id="p-workLocation" placeholder="Jakarta / kota lain"/></div>
         <div class="field"><label>Experience required <span class="req">*</span></label><input id="p-experienceRequired" placeholder="misal: 3-5 tahun"/></div>
         <div class="field"><label>Salary range</label><input id="p-salaryRange" placeholder="misal: 15-20 juta"/></div>
         <div class="field"><label>Number of hiring</label><input id="p-numberOfHiring" type="number" min="1" placeholder="1"/></div>
+        <div class="field"><label>Priority</label>
+          <select id="p-priority">
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
         <div class="field"><label>Request date</label><input id="p-requestDate" type="date"/></div>
+        <div class="field"><label>Target hire date</label><input id="p-targetHireDate" type="date"/></div>
+        <div class="field"><label>Next follow up</label><input id="p-nextFollowUp" type="date"/></div>
         <div class="field"><label>PIC recruiter</label><select id="p-picRecruiter"></select></div>
         <div class="field"><label>Status <span class="req">*</span></label>
           <select id="p-status">
@@ -171,12 +249,14 @@
             <option value="closed">Closed</option>
           </select>
         </div>
+        <div class="field"><label>JD / Requirement URL</label><input id="p-jdUrl" placeholder="link Google Drive dokumen JD"/></div>
       </div>
       <div class="form-grid full">
         <div class="field"><label>Job description</label><textarea id="p-jobDescription" placeholder="ringkasan tanggung jawab"></textarea></div>
         <div class="field"><label>Requirements</label><textarea id="p-requirements" placeholder="syarat wajib"></textarea></div>
         <div class="field"><label>Required skills</label><input id="p-requiredSkills" placeholder="pisahkan koma"/></div>
         <div class="field"><label>Preferred skills</label><input id="p-preferredSkills" placeholder="pisahkan koma, nice to have"/></div>
+        <div class="field"><label>Notes</label><textarea id="p-notes" placeholder="catatan recruiter/client"></textarea></div>
       </div>
       <div class="form-actions">
         <button class="btn secondary" id="p-cancel">Batal</button>
@@ -187,7 +267,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="pos-table">
         <thead><tr>
-          <th>Job ID</th><th>Position</th><th>Client</th><th>Location</th><th>Type</th><th>Exp. req</th><th>Salary</th><th>Hiring</th><th>Request date</th><th>PIC</th><th>Status</th><th>Kandidat</th><th></th>
+          <th>Job ID</th><th>Position</th><th>Client</th><th>Priority</th><th>Status</th><th>PIC</th><th>Age</th><th>Candidates</th><th></th>
         </tr></thead>
         <tbody id="pos-tbody"></tbody>
       </table>
@@ -199,13 +279,24 @@
   <div class="panel" id="panel-candidates">
     <div class="toolbar">
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <select class="filter" id="cand-filter">
-          <option value="all">Semua posisi</option>
+        <select class="filter" id="cand-filter-position"><option value="all">Semua posisi</option></select>
+        <select class="filter" id="cand-filter-stage"><option value="all">Semua stage</option></select>
+        <select class="filter" id="cand-filter-outcome">
+          <option value="all">Semua outcome</option>
+          <option value="active">Active</option>
+          <option value="onhold">On Hold</option>
+          <option value="rejected">Rejected</option>
+          <option value="withdrawn">Withdrawn</option>
         </select>
-        <input class="filter" id="cand-search" type="text" placeholder="Cari nama, kontak, skill, perusahaan..." style="min-width:240px;"/>
+        <select class="filter" id="cand-filter-recruiter"><option value="all">Semua recruiter</option></select>
+        <select class="filter" id="cand-filter-source"><option value="all">Semua source</option></select>
+        <label style="font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:4px;">
+          <input type="checkbox" id="cand-filter-followup"/> Follow-up due/overdue
+        </label>
+        <input class="filter" id="cand-search" type="text" placeholder="Cari nama, kontak, skill..." style="min-width:200px;"/>
       </div>
       <div style="display:flex;gap:8px;">
-        <button class="btn secondary" id="btn-download-template">Download template CSV</button>
+        <button class="btn secondary" id="btn-download-template">Template CSV</button>
         <button class="btn secondary" id="btn-bulk-upload">Upload bulk (CSV)</button>
         <input type="file" id="bulk-file-input" accept=".csv" style="display:none;"/>
         <button class="btn" id="btn-add-candidate">+ Tambah kandidat</button>
@@ -223,15 +314,25 @@
         <div class="field"><label>Stage <span class="req">*</span></label>
           <select id="c-stage">
             <option value="sourced">Sourced</option>
-            <option value="screening">Screening (internal)</option>
-            <option value="submitted">Submitted to client</option>
-            <option value="clientinterview">Client interview</option>
+            <option value="screening">Screening</option>
+            <option value="submitted">Submitted to Client</option>
+            <option value="clientinterview">Client Interview</option>
             <option value="offer">Offer</option>
             <option value="hired">Hired</option>
-            <option value="onhold">On hold</option>
-            <option value="rejected">Rejected</option>
           </select>
         </div>
+        <div class="field"><label>Outcome</label>
+          <select id="c-outcome">
+            <option value="active">Active</option>
+            <option value="onhold">On Hold</option>
+            <option value="rejected">Rejected</option>
+            <option value="withdrawn">Withdrawn</option>
+          </select>
+        </div>
+        <div class="field" id="c-rejectionReason-field" style="display:none;"><label>Rejection reason</label><select id="c-rejectionReason"></select></div>
+        <div class="field"><label>Source</label><select id="c-source"></select></div>
+        <div class="field"><label>LinkedIn</label><input id="c-linkedin" placeholder="URL profil LinkedIn"/></div>
+        <div class="field"><label>GitHub / Portfolio</label><input id="c-portfolio" placeholder="URL portfolio/GitHub"/></div>
       </div>
 
       <div class="form-section-label">Background</div>
@@ -244,21 +345,36 @@
         <div class="field"><label>Recruiter (PIC)</label><select id="c-recruiter"></select></div>
       </div>
 
-      <div class="form-section-label">Skill & ekspektasi</div>
+      <div class="form-section-label">Skill, ekspektasi & availability</div>
       <div class="form-grid">
         <div class="field" style="grid-column:1/-1;"><label>Key skills <span class="req">*</span></label><input id="c-keySkills" placeholder="pisahkan koma, misal: SAP, Excel, Financial Modeling"/></div>
         <div class="field"><label>Expected salary <span class="req">*</span></label><input id="c-expectedSalary" placeholder="misal: 18 juta"/></div>
-        <div class="field"><label>Notice period <span class="req">*</span></label><input id="c-noticePeriod" placeholder="misal: 1 bulan / bisa segera"/></div>
+        <div class="field"><label>Notice period</label><input id="c-noticePeriod" placeholder="misal: 1 bulan / bisa segera"/></div>
+        <div class="field"><label>Availability type</label>
+          <select id="c-availabilityType">
+            <option value="">-</option>
+            <option value="Immediate">Immediate</option>
+            <option value="2 Weeks">2 Weeks</option>
+            <option value="1 Month">1 Month</option>
+            <option value="2 Months">2 Months</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Available date</label><input id="c-availableDate" type="date"/></div>
       </div>
 
-      <div class="form-section-label">CV & catatan</div>
-      <div class="form-grid full">
+      <div class="form-section-label">Follow up & CV</div>
+      <div class="form-grid">
+        <div class="field"><label>Last contact</label><input id="c-lastContact" type="date"/></div>
+        <div class="field"><label>Next follow up</label><input id="c-nextFollowUp" type="date"/></div>
         <div class="field">
           <label>Upload CV <span class="req">*</span></label>
           <input id="c-cvFile" type="file" accept=".pdf,.doc,.docx"/>
           <div class="cv-current" id="c-cv-current"></div>
         </div>
-        <div class="field"><label>Catatan</label><textarea id="c-notes" placeholder="hasil interview, alasan reject, dll"></textarea></div>
+      </div>
+      <div class="form-grid full">
+        <div class="field"><label>Notes (recruiter)</label><textarea id="c-notes" placeholder="catatan hasil interview, dll — bukan tempat link/data terstruktur"></textarea></div>
       </div>
       <div class="form-actions">
         <button class="btn secondary" id="c-cancel">Batal</button>
@@ -269,7 +385,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="cand-table">
         <thead><tr>
-          <th>Nama</th><th>No. HP</th><th>Email</th><th>Job ID</th><th>Applied Position</th><th>Stage</th><th>Current</th><th>Education</th><th>Total exp</th><th>Related exp</th><th>Skills</th><th>Exp. salary</th><th>Notice</th><th>Recruiter</th><th>CV</th><th>Catatan</th><th></th>
+          <th>Candidate ID</th><th>Nama</th><th>No. HP</th><th>Job ID</th><th>Posisi</th><th>Stage</th><th>Outcome</th><th>Source</th><th>Recruiter</th><th>Next follow up</th><th>CV</th><th></th>
         </tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
@@ -282,53 +398,63 @@
     <div class="maint-grid">
       <div class="card">
         <p class="dash-col-title">Recruiter / PIC</p>
-        <div class="maint-add-row">
-          <input id="maint-recruiter-input" placeholder="Nama recruiter/PIC baru"/>
-          <button class="btn" id="btn-add-recruiter">Tambah</button>
-        </div>
+        <div class="maint-add-row"><input id="maint-recruiter-input" placeholder="Nama baru"/><button class="btn" id="btn-add-recruiter">Tambah</button></div>
         <div id="maint-recruiter-list"></div>
       </div>
       <div class="card">
         <p class="dash-col-title">Client</p>
-        <div class="maint-add-row">
-          <input id="maint-client-input" placeholder="Nama client baru"/>
-          <button class="btn" id="btn-add-client">Tambah</button>
-        </div>
+        <div class="maint-add-row"><input id="maint-client-input" placeholder="Nama client baru"/><button class="btn" id="btn-add-client">Tambah</button></div>
         <div id="maint-client-list"></div>
+      </div>
+      <div class="card">
+        <p class="dash-col-title">Candidate Source</p>
+        <div class="maint-add-row"><input id="maint-source-input" placeholder="Sumber baru"/><button class="btn" id="btn-add-source">Tambah</button></div>
+        <div id="maint-source-list"></div>
+      </div>
+    </div>
+    <div class="maint-grid" style="margin-top:16px;">
+      <div class="card">
+        <p class="dash-col-title">Rejection Reason</p>
+        <div class="maint-add-row"><input id="maint-reason-input" placeholder="Alasan baru"/><button class="btn" id="btn-add-reason">Tambah</button></div>
+        <div id="maint-reason-list"></div>
+      </div>
+      <div class="card">
+        <p class="dash-col-title">Priority, Employment Type, Work Arrangement, Stage</p>
+        <p class="muted" style="font-size:13px;">Opsi ini sudah baku (fixed) langsung di form supaya konsisten dan sederhana, gak perlu di-maintain manual:</p>
+        <p style="font-size:13px;margin:6px 0;"><strong>Priority:</strong> High, Medium, Low</p>
+        <p style="font-size:13px;margin:6px 0;"><strong>Employment Type:</strong> Permanent, Contract, Freelance, Internship</p>
+        <p style="font-size:13px;margin:6px 0;"><strong>Work Arrangement:</strong> WFO, Hybrid, Remote</p>
+        <p style="font-size:13px;margin:6px 0;"><strong>Stage:</strong> Sourced, Screening, Submitted to Client, Client Interview, Offer, Hired</p>
+        <p style="font-size:13px;margin:6px 0;"><strong>Outcome:</strong> Active, On Hold, Rejected, Withdrawn</p>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwr3SzELEyH4eQP282zT2KdEYKCNfV1ltFk2y9Qx0-eibZYiXsf95Ll1DLwIfUyplU/exec";
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
 
-let positions = [];
-let candidates = [];
-let recruiters = [];
-let clients = [];
-let editingPosId = null;
-let editingCandId = null;
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzca4UXWxKKaW6KupS3PrjVtSC81MD_dTNMTTrGosmvf-h3WtKMlyymTd8m8aUGhFw/exec";
+
+let positions = [], candidates = [], recruiters = [], clients = [], sources = [], rejectionReasons = [];
+let editingPosId = null, editingCandId = null;
 
 const posStatusLabel = {open:"Open", onhold:"On hold", closed:"Closed"};
-const stageLabel = {sourced:"Sourced", screening:"Screening", submitted:"Submitted to client", clientinterview:"Client interview", offer:"Offer", hired:"Hired", onhold:"On hold", rejected:"Rejected"};
+const stageLabel = {sourced:"Sourced", screening:"Screening", submitted:"Submitted to Client", clientinterview:"Client Interview", offer:"Offer", hired:"Hired"};
+const outcomeLabel = {active:"Active", onhold:"On Hold", rejected:"Rejected", withdrawn:"Withdrawn"};
+const FUNNEL_ORDER = ['sourced','screening','submitted','clientinterview','offer','hired'];
 
-function isConfigured(){
-  return APPS_SCRIPT_URL && APPS_SCRIPT_URL.startsWith('http');
-}
-
-async function apiGetAll(){
-  const res = await fetch(APPS_SCRIPT_URL);
-  return res.json();
-}
+function isConfigured(){ return APPS_SCRIPT_URL && APPS_SCRIPT_URL.startsWith('http'); }
+async function apiGetAll(){ const res = await fetch(APPS_SCRIPT_URL); return res.json(); }
 async function apiPost(action, payload){
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action, ...payload })
-  });
+  const res = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ action, ...payload }) });
   return res.json();
 }
-
 function fileToBase64(file){
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -337,7 +463,6 @@ function fileToBase64(file){
     reader.readAsDataURL(file);
   });
 }
-
 function normalizePhone(str){
   if(!str) return '';
   let digits = String(str).replace(/[^\d]/g, '');
@@ -346,21 +471,41 @@ function normalizePhone(str){
   else if(digits) digits = '62' + digits;
   return digits;
 }
-function looksLikePhone(str){
-  const digits = String(str||'').replace(/[^\d]/g, '');
-  return digits.length >= 8;
-}
+function looksLikePhone(str){ return String(str||'').replace(/[^\d]/g,'').length >= 8; }
 function findDuplicateByPhone(phone, excludeId){
   const norm = normalizePhone(phone);
   if(!norm || !looksLikePhone(phone)) return null;
   return candidates.find(c => c.id !== excludeId && normalizePhone(c.phone) === norm) || null;
 }
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function tagList(str){
+  return (str||'').split(',').map(s=>s.trim()).filter(Boolean).map(s=>`<span class="tag">${escapeHtml(s)}</span>`).join('');
+}
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function daysBetween(dateStr){
+  if(!dateStr) return null;
+  const d = new Date(dateStr);
+  if(isNaN(d)) return null;
+  return Math.floor((new Date(todayStr()) - new Date(d.toISOString().slice(0,10))) / 86400000);
+}
+function effectiveOutcome(c){
+  if(c.outcome) return c.outcome;
+  if(c.stage === 'rejected') return 'rejected';
+  if(c.stage === 'onhold') return 'onhold';
+  return 'active';
+}
+function showModal(html){
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('active');
+}
+window.closeModal = function(){ document.getElementById('modal-overlay').classList.remove('active'); };
+document.getElementById('modal-overlay').addEventListener('click', (e) => { if(e.target.id==='modal-overlay') closeModal(); });
 
 async function loadData(){
-  if(!isConfigured()){
-    document.getElementById('pos-loading').style.display = 'none';
-    return;
-  }
+  if(!isConfigured()){ document.getElementById('pos-loading').style.display = 'none'; return; }
   document.getElementById('setup-banner').style.display = 'none';
   try{
     const data = await apiGetAll();
@@ -368,6 +513,8 @@ async function loadData(){
     candidates = data.candidates || [];
     recruiters = data.recruiters || [];
     clients = data.clients || [];
+    sources = data.sources || [];
+    rejectionReasons = data.rejectionReasons || [];
   }catch(e){
     document.getElementById('pos-loading').textContent = 'Gagal memuat data. Cek koneksi / URL Apps Script.';
     return;
@@ -375,7 +522,6 @@ async function loadData(){
   document.getElementById('pos-loading').style.display = 'none';
   renderAll();
 }
-
 function renderAll(){
   renderDashboard();
   renderPositions();
@@ -383,16 +529,9 @@ function renderAll(){
   renderPositionOptions();
   renderRecruiterOptions();
   renderClientOptions();
+  renderSourceOptions();
+  renderRejectionReasonOptions();
   renderMaintenance();
-}
-
-function escapeHtml(s){
-  if(!s) return '';
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-function tagList(str){
-  return (str||'').split(',').map(s=>s.trim()).filter(Boolean)
-    .map(s=>`<span class="tag">${escapeHtml(s)}</span>`).join('');
 }
 
 document.querySelectorAll('.tab').forEach(tab => {
@@ -406,95 +545,183 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 function renderDashboard(){
-  const openPositions = positions.filter(p=>p.status==='open').length;
+  const openJobs = positions.filter(p=>p.status==='open').length;
   const totalCandidates = candidates.length;
+  const submitted = candidates.filter(c=>c.stage==='submitted' && effectiveOutcome(c)==='active').length;
+  const interviews = candidates.filter(c=>c.stage==='clientinterview' && effectiveOutcome(c)==='active').length;
   const hired = candidates.filter(c=>c.stage==='hired').length;
-  const activePipeline = candidates.filter(c=>!['hired','rejected'].includes(c.stage)).length;
+  const today = todayStr();
+  const followupsDue = candidates.filter(c=>c.nextFollowUp && c.nextFollowUp<=today && effectiveOutcome(c)==='active').length
+    + positions.filter(p=>p.nextFollowUp && p.nextFollowUp<=today && p.status==='open').length;
 
   document.getElementById('dash-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-num">${positions.length}</div><div class="stat-label">Total Job Request</div></div>
-    <div class="stat-card"><div class="stat-num">${openPositions}</div><div class="stat-label">Posisi Open</div></div>
-    <div class="stat-card"><div class="stat-num">${totalCandidates}</div><div class="stat-label">Total Kandidat</div></div>
-    <div class="stat-card"><div class="stat-num">${activePipeline}</div><div class="stat-label">Pipeline Aktif</div></div>
+    <div class="stat-card"><div class="stat-num">${openJobs}</div><div class="stat-label">Open Jobs</div></div>
+    <div class="stat-card"><div class="stat-num">${totalCandidates}</div><div class="stat-label">Total Candidates</div></div>
+    <div class="stat-card"><div class="stat-num">${submitted}</div><div class="stat-label">Submitted to Client</div></div>
+    <div class="stat-card"><div class="stat-num">${interviews}</div><div class="stat-label">Client Interviews</div></div>
     <div class="stat-card"><div class="stat-num">${hired}</div><div class="stat-label">Hired</div></div>
+    <div class="stat-card"><div class="stat-num">${followupsDue}</div><div class="stat-label">Follow-ups Due Today</div></div>
   `;
 
   const posStatusCounts = {open:0, onhold:0, closed:0};
   positions.forEach(p => { if(posStatusCounts[p.status]!==undefined) posStatusCounts[p.status]++; });
   const maxPos = Math.max(1, ...Object.values(posStatusCounts));
   document.getElementById('dash-pos-status').innerHTML = Object.keys(posStatusCounts).map(k => `
-    <div class="breakdown-row">
-      <span>${posStatusLabel[k]}</span>
+    <div class="breakdown-row"><span>${posStatusLabel[k]}</span>
       <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${(posStatusCounts[k]/maxPos*100)}%;"></div></div>
-      <strong>${posStatusCounts[k]}</strong>
-    </div>`).join('');
+      <strong>${posStatusCounts[k]}</strong></div>`).join('');
 
-  const stageCounts = {};
-  Object.keys(stageLabel).forEach(s => stageCounts[s]=0);
-  candidates.forEach(c => { if(stageCounts[c.stage]!==undefined) stageCounts[c.stage]++; });
-  const maxStage = Math.max(1, ...Object.values(stageCounts));
-  document.getElementById('dash-cand-stage').innerHTML = Object.keys(stageCounts).map(k => `
-    <div class="breakdown-row">
-      <span>${stageLabel[k]}</span>
-      <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${(stageCounts[k]/maxStage*100)}%;"></div></div>
-      <strong>${stageCounts[k]}</strong>
-    </div>`).join('');
+  const funnelCounts = {};
+  FUNNEL_ORDER.forEach(s => funnelCounts[s] = candidates.filter(c=>c.stage===s && effectiveOutcome(c)==='active').length);
+  const sideCounts = {
+    onhold: candidates.filter(c=>effectiveOutcome(c)==='onhold').length,
+    rejected: candidates.filter(c=>effectiveOutcome(c)==='rejected').length,
+    withdrawn: candidates.filter(c=>effectiveOutcome(c)==='withdrawn').length,
+  };
+  const maxFunnel = Math.max(1, ...Object.values(funnelCounts));
+  let funnelHtml = FUNNEL_ORDER.map(s => `
+    <div class="breakdown-row"><span>${stageLabel[s]}</span>
+      <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${(funnelCounts[s]/maxFunnel*100)}%;"></div></div>
+      <strong>${funnelCounts[s]}</strong></div>`).join('');
+  funnelHtml += `<div class="form-section-label">Lainnya</div>`;
+  funnelHtml += Object.keys(sideCounts).map(k => `
+    <div class="breakdown-row"><span>${outcomeLabel[k]}</span><strong>${sideCounts[k]}</strong></div>`).join('');
+  document.getElementById('dash-funnel').innerHTML = funnelHtml;
 
-  const openPos = positions.filter(p=>p.status==='open').map(p => ({
-    ...p,
-    candCount: candidates.filter(c=>c.positionId===p.id && !['rejected'].includes(c.stage)).length
-  })).sort((a,b)=>a.candCount-b.candCount).slice(0,5);
-  document.getElementById('dash-low-candidates').innerHTML = openPos.length ? openPos.map(p => `
-    <div class="breakdown-row">
-      <span><strong>${escapeHtml(p.jobId)}</strong> - ${escapeHtml(p.title)} (${escapeHtml(p.client)})</span>
-      <strong>${p.candCount} kandidat</strong>
-    </div>`).join('') : '<p class="muted" style="font-size:13px;">Belum ada posisi open.</p>';
+  const openPositions = positions.filter(p=>p.status==='open');
+  const agingGroups = { under15:0, mid:0, over30:0 };
+  openPositions.forEach(p => {
+    const age = daysBetween(p.requestDate || p.createdAt);
+    if(age===null) return;
+    if(age < 15) agingGroups.under15++;
+    else if(age <= 30) agingGroups.mid++;
+    else agingGroups.over30++;
+  });
+  document.getElementById('dash-aging').innerHTML = `
+    <div class="aging-box ok"><div class="aging-num">${agingGroups.under15}</div><div class="aging-label">&lt; 15 hari</div></div>
+    <div class="aging-box warn"><div class="aging-num">${agingGroups.mid}</div><div class="aging-label">15–30 hari</div></div>
+    <div class="aging-box bad"><div class="aging-num">${agingGroups.over30}</div><div class="aging-label">&gt; 30 hari</div></div>
+  `;
+
+  const candFollowups = candidates.filter(c=>c.nextFollowUp && c.nextFollowUp<=today && effectiveOutcome(c)==='active');
+  const posFollowups = positions.filter(p=>p.nextFollowUp && p.nextFollowUp<=today && p.status==='open');
+  let fuHtml = '';
+  candFollowups.forEach(c => {
+    const pos = positions.find(p=>p.id===c.positionId);
+    const overdue = c.nextFollowUp < today;
+    fuHtml += `<div class="followup-item ${overdue?'overdue':''}"><strong>${escapeHtml(c.name)}</strong> — ${pos?escapeHtml(pos.title):'-'}<br><span class="muted">Recruiter: ${escapeHtml(c.recruiter)||'-'} • Stage: ${stageLabel[c.stage]||c.stage} • Follow up: ${c.nextFollowUp}${overdue?' (overdue)':''}</span></div>`;
+  });
+  posFollowups.forEach(p => {
+    const overdue = p.nextFollowUp < today;
+    fuHtml += `<div class="followup-item ${overdue?'overdue':''}"><strong>${escapeHtml(p.title)}</strong> (Job) — ${escapeHtml(p.client)}<br><span class="muted">PIC: ${escapeHtml(p.picRecruiter)||'-'} • Follow up: ${p.nextFollowUp}${overdue?' (overdue)':''}</span></div>`;
+  });
+  document.getElementById('dash-followup').innerHTML = fuHtml || '<p class="muted" style="font-size:13px;">Tidak ada follow-up jatuh tempo hari ini.</p>';
+
+  let attentionHtml = '';
+  openPositions.forEach(p => {
+    const age = daysBetween(p.requestDate || p.createdAt);
+    const posCandidates = candidates.filter(c=>c.positionId===p.id && effectiveOutcome(c)!=='rejected' && effectiveOutcome(c)!=='withdrawn');
+    const submittedCount = posCandidates.filter(c=>['submitted','clientinterview','offer','hired'].includes(c.stage)).length;
+    const reasons = [];
+    if(age !== null && age > 30) reasons.push(`Open ${age} hari`);
+    if(posCandidates.length === 0) reasons.push('Belum ada kandidat');
+    else if(posCandidates.length < 2) reasons.push(`Kandidat sangat sedikit (${posCandidates.length})`);
+    if(posCandidates.length > 0 && submittedCount === 0) reasons.push('Belum ada yang submitted');
+    if(p.nextFollowUp && p.nextFollowUp < today) reasons.push('Follow-up overdue');
+    if(reasons.length){
+      attentionHtml += `<div class="attention-item">🔴 <span class="attention-title">${escapeHtml(p.title)}</span> <span class="muted">(${escapeHtml(p.jobId)} - ${escapeHtml(p.client)})</span><div class="attention-reasons">${reasons.join(' • ')}</div></div>`;
+    }
+  });
+  document.getElementById('dash-attention').innerHTML = attentionHtml || '<p class="muted" style="font-size:13px;">Tidak ada posisi yang butuh perhatian khusus saat ini.</p>';
+
+  const workloadRows = recruiters.map(r => {
+    const openJobsCount = positions.filter(p=>p.picRecruiter===r.name && p.status==='open').length;
+    const candCount = candidates.filter(c=>c.recruiter===r.name).length;
+    const sub = candidates.filter(c=>c.recruiter===r.name && c.stage==='submitted').length;
+    const intv = candidates.filter(c=>c.recruiter===r.name && c.stage==='clientinterview').length;
+    const hir = candidates.filter(c=>c.recruiter===r.name && c.stage==='hired').length;
+    return `<tr><td>${escapeHtml(r.name)}</td><td>${openJobsCount}</td><td>${candCount}</td><td>${sub}</td><td>${intv}</td><td>${hir}</td></tr>`;
+  }).join('');
+  document.getElementById('dash-workload').innerHTML = workloadRows || '<tr><td colspan="6" class="muted">Belum ada data recruiter.</td></tr>';
 }
 
 function renderPositionOptions(){
-  const filterSel = document.getElementById('cand-filter');
+  const filterSel = document.getElementById('cand-filter-position');
   const formSel = document.getElementById('c-position');
-  const currentFilter = filterSel.value;
-  filterSel.innerHTML = '<option value="all">Semua posisi</option>' +
-    positions.map(p => `<option value="${p.id}">${escapeHtml(p.jobId)} - ${escapeHtml(p.title)} (${escapeHtml(p.client)})</option>`).join('');
-  filterSel.value = currentFilter && [...filterSel.options].some(o=>o.value===currentFilter) ? currentFilter : 'all';
-  formSel.innerHTML = positions.map(p => `<option value="${p.id}">${escapeHtml(p.jobId)} - ${escapeHtml(p.title)} (${escapeHtml(p.client)})</option>`).join('');
+  const cur = filterSel.value;
+  const opts = positions.map(p => `<option value="${p.id}">${escapeHtml(p.jobId)} - ${escapeHtml(p.title)} (${escapeHtml(p.client)})</option>`).join('');
+  filterSel.innerHTML = '<option value="all">Semua posisi</option>' + opts;
+  filterSel.value = cur && [...filterSel.options].some(o=>o.value===cur) ? cur : 'all';
+  formSel.innerHTML = opts;
 }
-
 function renderRecruiterOptions(){
   const opts = '<option value="">-</option>' + recruiters.map(r=>`<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}</option>`).join('');
-  const posSel = document.getElementById('p-picRecruiter');
-  const candSel = document.getElementById('c-recruiter');
-  const posVal = posSel.value, candVal = candSel.value;
-  posSel.innerHTML = opts; posSel.value = posVal;
-  candSel.innerHTML = opts; candSel.value = candVal;
+  const posSel = document.getElementById('p-picRecruiter'), candSel = document.getElementById('c-recruiter');
+  const pv = posSel.value, cv = candSel.value;
+  posSel.innerHTML = opts; posSel.value = pv;
+  candSel.innerHTML = opts; candSel.value = cv;
+  const filterSel = document.getElementById('cand-filter-recruiter');
+  const fv = filterSel.value;
+  filterSel.innerHTML = '<option value="all">Semua recruiter</option>' + recruiters.map(r=>`<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}</option>`).join('');
+  filterSel.value = fv;
+  const picFilter = document.getElementById('pos-filter-pic');
+  const pfv = picFilter.value;
+  picFilter.innerHTML = '<option value="all">Semua PIC</option>' + recruiters.map(r=>`<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}</option>`).join('');
+  picFilter.value = pfv;
 }
-
 function renderClientOptions(){
   const sel = document.getElementById('p-client');
   const val = sel.value;
   sel.innerHTML = '<option value="">- pilih client -</option>' + clients.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
   sel.value = val;
+  const filterSel = document.getElementById('pos-filter-client');
+  const fv = filterSel.value;
+  filterSel.innerHTML = '<option value="all">Semua client</option>' + clients.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+  filterSel.value = fv;
 }
+function renderSourceOptions(){
+  const sel = document.getElementById('c-source');
+  const val = sel.value;
+  sel.innerHTML = '<option value="">-</option>' + sources.map(s=>`<option value="${escapeHtml(s.name)}">${escapeHtml(s.name)}</option>`).join('');
+  sel.value = val;
+  const filterSel = document.getElementById('cand-filter-source');
+  const fv = filterSel.value;
+  filterSel.innerHTML = '<option value="all">Semua source</option>' + sources.map(s=>`<option value="${escapeHtml(s.name)}">${escapeHtml(s.name)}</option>`).join('');
+  filterSel.value = fv;
+}
+function renderRejectionReasonOptions(){
+  const sel = document.getElementById('c-rejectionReason');
+  const val = sel.value;
+  sel.innerHTML = '<option value="">-</option>' + rejectionReasons.map(r=>`<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}</option>`).join('');
+  sel.value = val;
+}
+document.getElementById('c-outcome').addEventListener('change', function(){
+  document.getElementById('c-rejectionReason-field').style.display = this.value === 'rejected' ? 'block' : 'none';
+});
 
 function renderPositions(){
   const tbody = document.getElementById('pos-tbody');
-  const filter = document.getElementById('pos-filter').value;
-  let rows = positions.filter(p => filter==='all' || p.status===filter);
+  const fStatus = document.getElementById('pos-filter-status').value;
+  const fClient = document.getElementById('pos-filter-client').value;
+  const fPic = document.getElementById('pos-filter-pic').value;
+  const fPriority = document.getElementById('pos-filter-priority').value;
+  let rows = positions.filter(p =>
+    (fStatus==='all' || p.status===fStatus) &&
+    (fClient==='all' || p.client===fClient) &&
+    (fPic==='all' || p.picRecruiter===fPic) &&
+    (fPriority==='all' || p.priority===fPriority)
+  );
   document.getElementById('pos-empty').style.display = rows.length ? 'none' : 'block';
   tbody.innerHTML = rows.map(p => {
-    const candCount = candidates.filter(c => c.positionId === p.id && c.stage !== 'rejected').length;
+    const candForPos = candidates.filter(c => c.positionId === p.id);
+    const activeCandCount = candForPos.filter(c => effectiveOutcome(c)!=='rejected' && effectiveOutcome(c)!=='withdrawn').length;
+    const age = daysBetween(p.requestDate || p.createdAt);
+    const priority = p.priority || 'Medium';
     return `<tr>
-      <td><strong>${escapeHtml(p.jobId)||'<span class="muted">-</span>'}</strong></td>
-      <td class="position-name">${escapeHtml(p.title)}</td>
+      <td><strong>${escapeHtml(p.jobId)}</strong></td>
+      <td class="position-name" style="cursor:pointer;color:var(--accent);" onclick="showPositionDetail('${p.id}')">${escapeHtml(p.title)}</td>
       <td>${escapeHtml(p.client)}</td>
-      <td>${escapeHtml(p.workLocation)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(p.employmentType)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(p.experienceRequired)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(p.salaryRange)||'<span class="muted">-</span>'}</td>
-      <td>${p.numberOfHiring||'<span class="muted">-</span>'}</td>
-      <td>${p.requestDate||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(p.picRecruiter)||'<span class="muted">-</span>'}</td>
+      <td><span class="badge b-${priority.toLowerCase()}">${escapeHtml(priority)}</span></td>
       <td>
         <select class="inline-select b-${p.status}" onchange="quickUpdatePositionStatus('${p.id}', this.value, this)">
           <option value="open" ${p.status==='open'?'selected':''}>Open</option>
@@ -502,7 +729,9 @@ function renderPositions(){
           <option value="closed" ${p.status==='closed'?'selected':''}>Closed</option>
         </select>
       </td>
-      <td><span class="count-pill">${candCount} aktif</span></td>
+      <td>${escapeHtml(p.picRecruiter)||'<span class="muted">-</span>'}</td>
+      <td>${age!==null ? age+' hari' : '<span class="muted">-</span>'}</td>
+      <td><button class="count-pill" onclick="showCandidateBreakdown('${p.id}')">${activeCandCount}</button></td>
       <td>
         <button class="link-btn" onclick="editPosition('${p.id}')">Edit</button>
         <button class="link-btn danger" onclick="deletePosition('${p.id}')">Hapus</button>
@@ -510,29 +739,67 @@ function renderPositions(){
     </tr>`;
   }).join('');
 }
+['pos-filter-status','pos-filter-client','pos-filter-pic','pos-filter-priority'].forEach(id => {
+  document.getElementById(id).addEventListener('change', renderPositions);
+});
 
-document.getElementById('pos-filter').addEventListener('change', renderPositions);
+window.showCandidateBreakdown = function(positionId){
+  const p = positions.find(x=>x.id===positionId);
+  if(!p) return;
+  const candForPos = candidates.filter(c=>c.positionId===positionId);
+  const counts = {};
+  FUNNEL_ORDER.forEach(s => counts[s] = candForPos.filter(c=>c.stage===s && effectiveOutcome(c)==='active').length);
+  const onhold = candForPos.filter(c=>effectiveOutcome(c)==='onhold').length;
+  const rejected = candForPos.filter(c=>effectiveOutcome(c)==='rejected').length;
+  const withdrawn = candForPos.filter(c=>effectiveOutcome(c)==='withdrawn').length;
+  let html = `<h3>${escapeHtml(p.jobId)} - ${escapeHtml(p.title)}</h3>`;
+  FUNNEL_ORDER.forEach(s => { html += `<div class="detail-row"><div class="detail-label">${stageLabel[s]}</div><div class="detail-value">${counts[s]}</div></div>`; });
+  html += `<div class="detail-row"><div class="detail-label">On Hold</div><div class="detail-value">${onhold}</div></div>`;
+  html += `<div class="detail-row"><div class="detail-label">Rejected</div><div class="detail-value">${rejected}</div></div>`;
+  html += `<div class="detail-row"><div class="detail-label">Withdrawn</div><div class="detail-value">${withdrawn}</div></div>`;
+  showModal(html);
+};
+
+window.showPositionDetail = function(id){
+  const p = positions.find(x=>x.id===id);
+  if(!p) return;
+  const fields = [
+    ['Job ID', p.jobId], ['Client', p.client], ['Employment Type', p.employmentType], ['Work Arrangement', p.workArrangement],
+    ['Location', p.workLocation], ['Experience Required', p.experienceRequired], ['Salary Range', p.salaryRange],
+    ['Number of Hiring', p.numberOfHiring], ['Priority', p.priority], ['Request Date', p.requestDate],
+    ['Target Hire Date', p.targetHireDate], ['Last Update', p.lastUpdate], ['Next Follow Up', p.nextFollowUp],
+    ['PIC Recruiter', p.picRecruiter], ['Status', posStatusLabel[p.status]||p.status],
+    ['JD / Requirement URL', p.jdUrl ? `<a href="${p.jdUrl}" target="_blank" rel="noopener">Buka dokumen</a>` : ''],
+    ['Required Skills', p.requiredSkills], ['Preferred Skills', p.preferredSkills],
+    ['Job Description', p.jobDescription], ['Requirements', p.requirements], ['Notes', p.notes],
+  ];
+  let html = `<h3>${escapeHtml(p.title)}</h3>`;
+  fields.forEach(([label, val]) => {
+    html += `<div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value">${val || '<span class="muted">-</span>'}</div></div>`;
+  });
+  showModal(html);
+};
 
 function resetPosForm(){
-  ['title','workLocation','experienceRequired','salaryRange','numberOfHiring',
-   'requestDate','jobDescription','requirements','requiredSkills','preferredSkills'].forEach(f=>{
+  ['title','workLocation','experienceRequired','salaryRange','numberOfHiring','requestDate','targetHireDate',
+   'nextFollowUp','jdUrl','jobDescription','requirements','requiredSkills','preferredSkills','notes'].forEach(f=>{
     document.getElementById('p-'+f).value='';
   });
   document.getElementById('p-client').value='';
   document.getElementById('p-employmentType').value='';
+  document.getElementById('p-workArrangement').value='';
   document.getElementById('p-picRecruiter').value='';
   document.getElementById('p-status').value='open';
+  document.getElementById('p-priority').value='Medium';
   editingPosId = null;
 }
 document.getElementById('btn-add-position').addEventListener('click', () => {
-  if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html, lihat README_SETUP.md'); return; }
+  if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html.'); return; }
   if(clients.length===0){ alert('Tambahkan client dulu di tab Maintenance sebelum bikin posisi.'); return; }
   resetPosForm();
   document.getElementById('pos-form').style.display='block';
 });
-document.getElementById('p-cancel').addEventListener('click', () => {
-  document.getElementById('pos-form').style.display='none';
-});
+document.getElementById('p-cancel').addEventListener('click', () => { document.getElementById('pos-form').style.display='none'; });
 document.getElementById('p-save').addEventListener('click', async () => {
   const title = document.getElementById('p-title').value.trim();
   const client = document.getElementById('p-client').value;
@@ -544,28 +811,29 @@ document.getElementById('p-save').addEventListener('click', async () => {
   const data = {
     title, client, workLocation, experienceRequired,
     employmentType: document.getElementById('p-employmentType').value,
+    workArrangement: document.getElementById('p-workArrangement').value,
     salaryRange: document.getElementById('p-salaryRange').value.trim(),
     numberOfHiring: document.getElementById('p-numberOfHiring').value,
+    priority: document.getElementById('p-priority').value,
     requestDate: document.getElementById('p-requestDate').value,
+    targetHireDate: document.getElementById('p-targetHireDate').value,
+    nextFollowUp: document.getElementById('p-nextFollowUp').value,
+    jdUrl: document.getElementById('p-jdUrl').value.trim(),
     picRecruiter: document.getElementById('p-picRecruiter').value,
     status: document.getElementById('p-status').value,
     jobDescription: document.getElementById('p-jobDescription').value.trim(),
     requirements: document.getElementById('p-requirements').value.trim(),
     requiredSkills: document.getElementById('p-requiredSkills').value.trim(),
     preferredSkills: document.getElementById('p-preferredSkills').value.trim(),
+    notes: document.getElementById('p-notes').value.trim(),
   };
   document.getElementById('p-save').disabled = true;
   try{
-    if(editingPosId){
-      await apiPost('updatePosition', { id: editingPosId, data });
-    } else {
-      await apiPost('addPosition', { data });
-    }
+    if(editingPosId){ await apiPost('updatePosition', { id: editingPosId, data }); }
+    else { await apiPost('addPosition', { data }); }
     await loadData();
     document.getElementById('pos-form').style.display='none';
-  }catch(e){
-    alert('Gagal menyimpan. Coba lagi.');
-  }
+  }catch(e){ alert('Gagal menyimpan. Coba lagi.'); }
   document.getElementById('p-save').disabled = false;
 });
 window.editPosition = function(id){
@@ -575,17 +843,23 @@ window.editPosition = function(id){
   document.getElementById('p-title').value=p.title||'';
   document.getElementById('p-client').value=p.client||'';
   document.getElementById('p-employmentType').value=p.employmentType||'';
+  document.getElementById('p-workArrangement').value=p.workArrangement||'';
   document.getElementById('p-workLocation').value=p.workLocation||'';
   document.getElementById('p-experienceRequired').value=p.experienceRequired||'';
   document.getElementById('p-salaryRange').value=p.salaryRange||'';
   document.getElementById('p-numberOfHiring').value=p.numberOfHiring||'';
+  document.getElementById('p-priority').value=p.priority||'Medium';
   document.getElementById('p-requestDate').value=p.requestDate||'';
+  document.getElementById('p-targetHireDate').value=p.targetHireDate||'';
+  document.getElementById('p-nextFollowUp').value=p.nextFollowUp||'';
+  document.getElementById('p-jdUrl').value=p.jdUrl||'';
   document.getElementById('p-picRecruiter').value=p.picRecruiter||'';
   document.getElementById('p-status').value=p.status||'open';
   document.getElementById('p-jobDescription').value=p.jobDescription||'';
   document.getElementById('p-requirements').value=p.requirements||'';
   document.getElementById('p-requiredSkills').value=p.requiredSkills||'';
   document.getElementById('p-preferredSkills').value=p.preferredSkills||'';
+  document.getElementById('p-notes').value=p.notes||'';
   document.getElementById('pos-form').style.display='block';
   document.getElementById('pos-form').scrollIntoView({behavior:'smooth', block:'center'});
 };
@@ -603,54 +877,60 @@ window.quickUpdatePositionStatus = async function(id, newStatus, selectEl){
     await apiPost('updatePosition', { id, data: { status: newStatus } });
     const p = positions.find(x=>x.id===id);
     if(p) p.status = newStatus;
-  }catch(e){
-    alert('Gagal update status. Coba lagi.');
-    await loadData();
-  }
+    renderDashboard();
+  }catch(e){ alert('Gagal update status.'); await loadData(); }
   selectEl.disabled = false;
 };
 
 function renderCandidates(){
   const tbody = document.getElementById('cand-tbody');
-  const filter = document.getElementById('cand-filter').value;
+  const fPos = document.getElementById('cand-filter-position').value;
+  const fStage = document.getElementById('cand-filter-stage').value;
+  const fOutcome = document.getElementById('cand-filter-outcome').value;
+  const fRecruiter = document.getElementById('cand-filter-recruiter').value;
+  const fSource = document.getElementById('cand-filter-source').value;
+  const fFollowup = document.getElementById('cand-filter-followup').checked;
   const search = document.getElementById('cand-search').value.trim().toLowerCase();
-  let rows = candidates.filter(c => filter==='all' || c.positionId===filter);
+  const today = todayStr();
+
+  let rows = candidates.filter(c =>
+    (fPos==='all' || c.positionId===fPos) &&
+    (fStage==='all' || c.stage===fStage) &&
+    (fOutcome==='all' || effectiveOutcome(c)===fOutcome) &&
+    (fRecruiter==='all' || c.recruiter===fRecruiter) &&
+    (fSource==='all' || c.source===fSource) &&
+    (!fFollowup || (c.nextFollowUp && c.nextFollowUp<=today))
+  );
   if(search){
-    rows = rows.filter(c => {
-      const haystack = [c.name, c.phone, c.email, c.currentCompany, c.currentPosition, c.keySkills, c.notes]
-        .map(v=>(v||'').toLowerCase()).join(' ');
-      return haystack.includes(search);
-    });
+    rows = rows.filter(c => [c.name,c.phone,c.email,c.currentCompany,c.currentPosition,c.keySkills,c.notes]
+      .map(v=>(v||'').toLowerCase()).join(' ').includes(search));
   }
   document.getElementById('cand-empty').style.display = rows.length ? 'none' : 'block';
   tbody.innerHTML = rows.map(c => {
     const pos = positions.find(p => p.id === c.positionId);
     const jobIdLabel = pos ? escapeHtml(pos.jobId) : '<span class="muted">-</span>';
-    const posTitleLabel = pos ? `${escapeHtml(pos.title)} <span class="muted" style="font-size:11px;">(${escapeHtml(pos.client)})</span>` : '<span class="muted">posisi dihapus</span>';
+    const posLabel = pos ? escapeHtml(pos.title) : '<span class="muted">dihapus</span>';
+    const outcome = effectiveOutcome(c);
     const cvHtml = c.cvUrl
-      ? `<a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">Lihat CV</a>`
-      : `<button class="link-btn" onclick="triggerCvUpload('${c.id}')" style="color:var(--amber);">+ Upload CV</button>`;
+      ? `<a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">Lihat</a>`
+      : `<button class="link-btn" onclick="triggerCvUpload('${c.id}')" style="color:var(--amber);">Upload</button>`;
+    const overdue = c.nextFollowUp && c.nextFollowUp < today;
     return `<tr>
-      <td>${escapeHtml(c.name)}</td>
+      <td><strong>${escapeHtml(c.candidateId)||'<span class="muted">-</span>'}</strong></td>
+      <td style="cursor:pointer;color:var(--accent);" onclick="showCandidateDetail('${c.id}')">${escapeHtml(c.name)}</td>
       <td>${escapeHtml(c.phone)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.email)||'<span class="muted">-</span>'}</td>
-      <td><strong>${jobIdLabel}</strong></td>
-      <td style="max-width:160px;">${posTitleLabel}</td>
+      <td>${jobIdLabel}</td>
+      <td>${posLabel}</td>
       <td>
         <select class="inline-select b-${c.stage}" onchange="quickUpdateCandidateStage('${c.id}', this.value, this)">
-          ${Object.keys(stageLabel).map(s=>`<option value="${s}" ${c.stage===s?'selected':''}>${stageLabel[s]}</option>`).join('')}
+          ${FUNNEL_ORDER.map(s=>`<option value="${s}" ${c.stage===s?'selected':''}>${stageLabel[s]}</option>`).join('')}
         </select>
       </td>
-      <td style="max-width:150px;">${escapeHtml(c.currentPosition)||''}${c.currentPosition&&c.currentCompany?' @ ':''}${escapeHtml(c.currentCompany)||''}</td>
-      <td style="max-width:140px;">${escapeHtml(c.education)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.totalExperience)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.relatedExperience)||'<span class="muted">-</span>'}</td>
-      <td style="max-width:180px;">${tagList(c.keySkills)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.expectedSalary)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.noticePeriod)||'<span class="muted">-</span>'}</td>
+      <td><span class="badge b-${outcome}">${outcomeLabel[outcome]}</span></td>
+      <td>${escapeHtml(c.source)||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(c.recruiter)||'<span class="muted">-</span>'}</td>
+      <td style="${overdue?'color:var(--red);font-weight:600;':''}">${c.nextFollowUp||'<span class="muted">-</span>'}</td>
       <td>${cvHtml}</td>
-      <td style="max-width:160px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
       <td>
         <button class="link-btn" onclick="editCandidate('${c.id}')">Edit</button>
         <button class="link-btn danger" onclick="deleteCandidate('${c.id}')">Hapus</button>
@@ -658,68 +938,104 @@ function renderCandidates(){
     </tr>`;
   }).join('');
 }
-document.getElementById('cand-filter').addEventListener('change', renderCandidates);
+['cand-filter-position','cand-filter-stage','cand-filter-outcome','cand-filter-recruiter','cand-filter-source'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderCandidates);
+});
+document.getElementById('cand-filter-followup').addEventListener('change', renderCandidates);
 document.getElementById('cand-search').addEventListener('input', renderCandidates);
+(function initStageFilterOptions(){
+  const sel = document.getElementById('cand-filter-stage');
+  sel.innerHTML = '<option value="all">Semua stage</option>' + FUNNEL_ORDER.map(s=>`<option value="${s}">${stageLabel[s]}</option>`).join('');
+})();
+
+window.showCandidateDetail = function(id){
+  const c = candidates.find(x=>x.id===id);
+  if(!c) return;
+  const pos = positions.find(p=>p.id===c.positionId);
+  const fields = [
+    ['Candidate ID', c.candidateId], ['Email', c.email], ['LinkedIn', c.linkedin ? `<a href="${c.linkedin}" target="_blank" rel="noopener">${c.linkedin}</a>` : ''],
+    ['GitHub/Portfolio', c.portfolio ? `<a href="${c.portfolio}" target="_blank" rel="noopener">${c.portfolio}</a>` : ''],
+    ['Applied Position', pos ? `${pos.jobId} - ${pos.title}` : ''], ['Source', c.source],
+    ['Current Company', c.currentCompany], ['Current Position', c.currentPosition],
+    ['Education', c.education], ['Total Experience', c.totalExperience], ['Related Experience', c.relatedExperience],
+    ['Key Skills', c.keySkills], ['Expected Salary', c.expectedSalary], ['Notice Period', c.noticePeriod],
+    ['Availability Type', c.availabilityType], ['Available Date', c.availableDate],
+    ['Last Contact', c.lastContact], ['Next Follow Up', c.nextFollowUp],
+    ['Rejection Reason', c.rejectionReason], ['Notes', c.notes],
+  ];
+  let html = `<h3>${escapeHtml(c.name)}</h3>`;
+  fields.forEach(([label, val]) => {
+    html += `<div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value">${val || '<span class="muted">-</span>'}</div></div>`;
+  });
+  showModal(html);
+};
 
 function resetCandForm(){
-  ['name','phone','email','currentCompany','currentPosition','totalExperience','relatedExperience',
-   'education','keySkills','expectedSalary','noticePeriod','notes'].forEach(f=>{
+  ['name','phone','email','currentCompany','currentPosition','totalExperience','relatedExperience','education',
+   'keySkills','expectedSalary','noticePeriod','availableDate','lastContact','nextFollowUp','linkedin','portfolio','notes'].forEach(f=>{
     document.getElementById('c-'+f).value='';
   });
   document.getElementById('c-position').value = positions[0]?.id || '';
   document.getElementById('c-recruiter').value='';
+  document.getElementById('c-source').value='';
   document.getElementById('c-stage').value='sourced';
+  document.getElementById('c-outcome').value='active';
+  document.getElementById('c-rejectionReason').value='';
+  document.getElementById('c-rejectionReason-field').style.display='none';
+  document.getElementById('c-availabilityType').value='';
   document.getElementById('c-cvFile').value='';
   document.getElementById('c-cv-current').innerHTML='';
   editingCandId = null;
 }
 document.getElementById('btn-add-candidate').addEventListener('click', () => {
-  if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html, lihat README_SETUP.md'); return; }
+  if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html.'); return; }
   if(positions.length===0){ alert('Tambahkan posisi dulu sebelum input kandidat.'); return; }
   resetCandForm();
   document.getElementById('cand-form').style.display='block';
 });
-document.getElementById('c-cancel').addEventListener('click', () => {
-  document.getElementById('cand-form').style.display='none';
-});
+document.getElementById('c-cancel').addEventListener('click', () => { document.getElementById('cand-form').style.display='none'; });
 document.getElementById('c-save').addEventListener('click', async () => {
   const name = document.getElementById('c-name').value.trim();
   const phone = document.getElementById('c-phone').value.trim();
-  const email = document.getElementById('c-email').value.trim();
   const currentCompany = document.getElementById('c-currentCompany').value.trim();
   const currentPosition = document.getElementById('c-currentPosition').value.trim();
   const totalExperience = document.getElementById('c-totalExperience').value.trim();
   const relatedExperience = document.getElementById('c-relatedExperience').value.trim();
   const keySkills = document.getElementById('c-keySkills').value.trim();
   const expectedSalary = document.getElementById('c-expectedSalary').value.trim();
-  const noticePeriod = document.getElementById('c-noticePeriod').value.trim();
   const cvFile = document.getElementById('c-cvFile').files[0];
 
-  if(!name || !phone || !currentCompany || !currentPosition || !totalExperience ||
-     !relatedExperience || !keySkills || !expectedSalary || !noticePeriod){
+  if(!name || !phone || !currentCompany || !currentPosition || !totalExperience || !relatedExperience || !keySkills || !expectedSalary){
     alert('Semua field wajib (*) harus diisi'); return;
   }
-  if(!editingCandId && !cvFile){
-    alert('Upload CV wajib untuk kandidat baru'); return;
-  }
+  if(!editingCandId && !cvFile){ alert('Upload CV wajib untuk kandidat baru'); return; }
 
   const dup = findDuplicateByPhone(phone, editingCandId);
   if(dup){
     const posOfDup = positions.find(p=>p.id===dup.positionId);
     const posLabel = posOfDup ? `${posOfDup.jobId} - ${posOfDup.title}` : 'posisi tidak diketahui';
-    const proceed = confirm(
-      `Nomor ini sudah terdaftar atas nama "${dup.name}" (${posLabel}, stage: ${stageLabel[dup.stage]||dup.stage}).\n\nTetap simpan sebagai entri baru?`
-    );
-    if(!proceed) return;
+    if(!confirm(`Nomor ini sudah terdaftar atas nama "${dup.name}" (${posLabel}). Tetap simpan sebagai entri baru?`)) return;
   }
 
   const data = {
-    name, phone, email, currentCompany, currentPosition, totalExperience,
-    relatedExperience, keySkills, expectedSalary, noticePeriod,
-    education: document.getElementById('c-education').value.trim(),
-    recruiter: document.getElementById('c-recruiter').value,
+    name, phone,
+    email: document.getElementById('c-email').value.trim(),
+    linkedin: document.getElementById('c-linkedin').value.trim(),
+    portfolio: document.getElementById('c-portfolio').value.trim(),
     positionId: document.getElementById('c-position').value,
     stage: document.getElementById('c-stage').value,
+    outcome: document.getElementById('c-outcome').value,
+    rejectionReason: document.getElementById('c-outcome').value==='rejected' ? document.getElementById('c-rejectionReason').value : '',
+    source: document.getElementById('c-source').value,
+    currentCompany, currentPosition, totalExperience, relatedExperience,
+    education: document.getElementById('c-education').value.trim(),
+    recruiter: document.getElementById('c-recruiter').value,
+    keySkills, expectedSalary,
+    noticePeriod: document.getElementById('c-noticePeriod').value.trim(),
+    availabilityType: document.getElementById('c-availabilityType').value,
+    availableDate: document.getElementById('c-availableDate').value,
+    lastContact: document.getElementById('c-lastContact').value,
+    nextFollowUp: document.getElementById('c-nextFollowUp').value,
     notes: document.getElementById('c-notes').value.trim(),
   };
 
@@ -731,16 +1047,11 @@ document.getElementById('c-save').addEventListener('click', async () => {
       data.cvFileName = cvFile.name;
       data.cvMimeType = cvFile.type;
     }
-    if(editingCandId){
-      await apiPost('updateCandidate', { id: editingCandId, data });
-    } else {
-      await apiPost('addCandidate', { data });
-    }
+    if(editingCandId){ await apiPost('updateCandidate', { id: editingCandId, data }); }
+    else { await apiPost('addCandidate', { data }); }
     await loadData();
     document.getElementById('cand-form').style.display='none';
-  }catch(e){
-    alert('Gagal menyimpan. Coba lagi.');
-  }
+  }catch(e){ alert('Gagal menyimpan. Coba lagi.'); }
   document.getElementById('c-save').disabled = false;
   document.getElementById('c-save').textContent = 'Simpan';
 });
@@ -751,8 +1062,14 @@ window.editCandidate = function(id){
   document.getElementById('c-name').value=c.name||'';
   document.getElementById('c-phone').value=c.phone||'';
   document.getElementById('c-email').value=c.email||'';
+  document.getElementById('c-linkedin').value=c.linkedin||'';
+  document.getElementById('c-portfolio').value=c.portfolio||'';
   document.getElementById('c-position').value=c.positionId;
   document.getElementById('c-stage').value=c.stage;
+  document.getElementById('c-outcome').value=c.outcome||'active';
+  document.getElementById('c-rejectionReason-field').style.display = (c.outcome==='rejected') ? 'block':'none';
+  document.getElementById('c-rejectionReason').value=c.rejectionReason||'';
+  document.getElementById('c-source').value=c.source||'';
   document.getElementById('c-currentCompany').value=c.currentCompany||'';
   document.getElementById('c-currentPosition').value=c.currentPosition||'';
   document.getElementById('c-totalExperience').value=c.totalExperience||'';
@@ -762,11 +1079,14 @@ window.editCandidate = function(id){
   document.getElementById('c-noticePeriod').value=c.noticePeriod||'';
   document.getElementById('c-education').value=c.education||'';
   document.getElementById('c-recruiter').value=c.recruiter||'';
+  document.getElementById('c-availabilityType').value=c.availabilityType||'';
+  document.getElementById('c-availableDate').value=c.availableDate||'';
+  document.getElementById('c-lastContact').value=c.lastContact||'';
+  document.getElementById('c-nextFollowUp').value=c.nextFollowUp||'';
   document.getElementById('c-notes').value=c.notes||'';
   document.getElementById('c-cvFile').value='';
   document.getElementById('c-cv-current').innerHTML = c.cvUrl
-    ? `CV saat ini: <a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">lihat</a> (upload file baru untuk mengganti)`
-    : '';
+    ? `CV saat ini: <a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">lihat</a> (upload file baru untuk mengganti)` : '';
   document.getElementById('cand-form').style.display='block';
   document.getElementById('cand-form').scrollIntoView({behavior:'smooth', block:'center'});
 };
@@ -784,18 +1104,13 @@ window.quickUpdateCandidateStage = async function(id, newStage, selectEl){
     await apiPost('updateCandidate', { id, data: { stage: newStage } });
     const c = candidates.find(x=>x.id===id);
     if(c) c.stage = newStage;
-  }catch(e){
-    alert('Gagal update stage. Coba lagi.');
-    await loadData();
-  }
+    renderDashboard();
+  }catch(e){ alert('Gagal update stage.'); await loadData(); }
   selectEl.disabled = false;
 };
 
 let pendingCvCandidateId = null;
-window.triggerCvUpload = function(id){
-  pendingCvCandidateId = id;
-  document.getElementById('row-cv-input').click();
-};
+window.triggerCvUpload = function(id){ pendingCvCandidateId = id; document.getElementById('row-cv-input').click(); };
 document.getElementById('row-cv-input').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   e.target.value = '';
@@ -804,29 +1119,20 @@ document.getElementById('row-cv-input').addEventListener('change', async (e) => 
   pendingCvCandidateId = null;
   try{
     const cvBase64 = await fileToBase64(file);
-    await apiPost('updateCandidate', {
-      id,
-      data: { cvBase64, cvFileName: file.name, cvMimeType: file.type }
-    });
+    await apiPost('updateCandidate', { id, data: { cvBase64, cvFileName: file.name, cvMimeType: file.type } });
     await loadData();
-  }catch(err){
-    alert('Gagal upload CV. Coba lagi.');
-  }
+  }catch(err){ alert('Gagal upload CV. Coba lagi.'); }
 });
 
-const CSV_HEADERS = ['jobId','name','phone','email','stage','currentCompany','currentPosition','totalExperience','relatedExperience','education','recruiter','keySkills','expectedSalary','noticePeriod','notes'];
-
+const CSV_HEADERS = ['jobId','name','phone','email','stage','source','currentCompany','currentPosition','totalExperience','relatedExperience','education','recruiter','keySkills','expectedSalary','noticePeriod','notes'];
 document.getElementById('btn-download-template').addEventListener('click', () => {
-  const sampleRow = ['JOB-0001','Nama Kandidat','081234567890','nama@email.com','sourced','PT Contoh','Staff Finance','3 tahun','2 tahun','S1 Akuntansi','Nama Recruiter','Excel, SAP','10 juta','1 bulan','contoh catatan'];
+  const sampleRow = ['JOB-0001','Nama Kandidat','081234567890','nama@email.com','sourced','LinkedIn','PT Contoh','Staff Finance','3 tahun','2 tahun','S1 Akuntansi','Nama Recruiter','Excel, SAP','10 juta','1 bulan','contoh catatan'];
   const csv = CSV_HEADERS.join(',') + '\n' + sampleRow.map(v=>`"${v}"`).join(',');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'template_kandidat.csv';
-  a.click();
+  const a = document.createElement('a'); a.href = url; a.download = 'template_kandidat.csv'; a.click();
   URL.revokeObjectURL(url);
 });
-
 function parseCSV(text){
   const lines = text.replace(/\r/g,'').split('\n').filter(l => l.trim().length > 0);
   if(lines.length < 2) return [];
@@ -839,8 +1145,7 @@ function parseCSV(text){
   });
 }
 function parseCSVLine(line){
-  const result = [];
-  let cur = '', inQuotes = false;
+  const result = []; let cur = '', inQuotes = false;
   for(let i=0;i<line.length;i++){
     const ch = line[i];
     if(inQuotes){
@@ -856,28 +1161,21 @@ function parseCSVLine(line){
   result.push(cur);
   return result;
 }
-
 document.getElementById('btn-bulk-upload').addEventListener('click', () => {
-  if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html, lihat README_SETUP.md'); return; }
+  if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html.'); return; }
   document.getElementById('bulk-file-input').click();
 });
-
 document.getElementById('bulk-file-input').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
   const text = await file.text();
   const rows = parseCSV(text);
   e.target.value = '';
-
-  if(rows.length === 0){
-    alert('File CSV kosong atau formatnya salah.');
-    return;
-  }
+  if(rows.length === 0){ alert('File CSV kosong atau formatnya salah.'); return; }
 
   const resultBox = document.getElementById('bulk-result');
   resultBox.style.display = 'block';
   resultBox.innerHTML = `<p class="muted">Memproses ${rows.length} baris...</p>`;
-
   let success = 0, skippedDup = [], failed = [];
   const seenPhonesInBatch = [];
 
@@ -885,18 +1183,9 @@ document.getElementById('bulk-file-input').addEventListener('change', async (e) 
     const name = (row.name||'').trim();
     const phone = (row.phone||'').trim();
     const jobId = (row.jobId||'').trim();
-
-    if(!name || !phone){
-      failed.push(`${name||'(tanpa nama)'}: nama/no HP kosong`);
-      continue;
-    }
-
+    if(!name || !phone){ failed.push(`${name||'(tanpa nama)'}: nama/no HP kosong`); continue; }
     const pos = positions.find(p => p.jobId === jobId);
-    if(!pos){
-      failed.push(`${name}: Job ID "${jobId}" tidak ditemukan`);
-      continue;
-    }
-
+    if(!pos){ failed.push(`${name}: Job ID "${jobId}" tidak ditemukan`); continue; }
     const normPhone = normalizePhone(phone);
     const dupExisting = findDuplicateByPhone(phone, null);
     const dupInBatch = seenPhonesInBatch.includes(normPhone);
@@ -904,93 +1193,55 @@ document.getElementById('bulk-file-input').addEventListener('change', async (e) 
       skippedDup.push(`${name} (${phone})${dupExisting ? ' - sudah ada: '+dupExisting.name : ' - duplikat dalam file'}`);
       continue;
     }
-
     const stage = (row.stage||'sourced').trim().toLowerCase();
     const data = {
-      name, phone,
-      email: row.email||'',
-      positionId: pos.id,
-      stage: stageLabel[stage] ? stage : 'sourced',
-      currentCompany: row.currentCompany||'',
-      currentPosition: row.currentPosition||'',
-      totalExperience: row.totalExperience||'',
-      relatedExperience: row.relatedExperience||'',
-      education: row.education||'',
-      recruiter: row.recruiter||'',
-      keySkills: row.keySkills||'',
-      expectedSalary: row.expectedSalary||'',
-      noticePeriod: row.noticePeriod||'',
-      notes: row.notes||'',
+      name, phone, email: row.email||'', source: row.source||'',
+      positionId: pos.id, stage: stageLabel[stage] ? stage : 'sourced', outcome: 'active',
+      currentCompany: row.currentCompany||'', currentPosition: row.currentPosition||'',
+      totalExperience: row.totalExperience||'', relatedExperience: row.relatedExperience||'',
+      education: row.education||'', recruiter: row.recruiter||'', keySkills: row.keySkills||'',
+      expectedSalary: row.expectedSalary||'', noticePeriod: row.noticePeriod||'', notes: row.notes||'',
     };
-
-    try{
-      await apiPost('addCandidate', { data });
-      seenPhonesInBatch.push(normPhone);
-      success++;
-    }catch(err){
-      failed.push(`${name}: gagal simpan (${err.message||'error'})`);
-    }
+    try{ await apiPost('addCandidate', { data }); seenPhonesInBatch.push(normPhone); success++; }
+    catch(err){ failed.push(`${name}: gagal simpan`); }
   }
-
   await loadData();
-
   let html = `<strong>Hasil upload:</strong> ${success} berhasil, ${skippedDup.length} duplikat dilewati, ${failed.length} gagal.`;
-  if(success > 0){
-    html += `<p class="muted" style="font-size:12px;margin:6px 0 0;">Kandidat dari upload bulk belum punya CV — cari tombol "+ Upload CV" kuning di kolom CV pada tabel di bawah untuk melengkapi satu-satu.</p>`;
-  }
-  if(skippedDup.length){
-    html += `<div class="form-section-label">Dilewati (duplikat nomor HP)</div><ul style="margin:0;padding-left:18px;font-size:13px;">${skippedDup.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul>`;
-  }
-  if(failed.length){
-    html += `<div class="form-section-label">Gagal</div><ul style="margin:0;padding-left:18px;font-size:13px;color:var(--red);">${failed.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul>`;
-  }
+  if(success > 0) html += `<p class="muted" style="font-size:12px;margin:6px 0 0;">Kandidat dari upload bulk belum punya CV — klik nama kandidat lalu Edit untuk upload CV.</p>`;
+  if(skippedDup.length) html += `<div class="form-section-label">Dilewati (duplikat)</div><ul style="margin:0;padding-left:18px;font-size:13px;">${skippedDup.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul>`;
+  if(failed.length) html += `<div class="form-section-label">Gagal</div><ul style="margin:0;padding-left:18px;font-size:13px;color:var(--red);">${failed.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul>`;
   html += `<div class="form-actions"><button class="btn secondary" onclick="document.getElementById('bulk-result').style.display='none';">Tutup</button></div>`;
   resultBox.innerHTML = html;
 });
 
 function renderMaintenance(){
-  document.getElementById('maint-recruiter-list').innerHTML = recruiters.length ? recruiters.map(r => `
-    <div class="maint-list-item">
-      <span>${escapeHtml(r.name)}</span>
-      <button class="link-btn danger" onclick="deleteRecruiter('${r.id}')">Hapus</button>
-    </div>`).join('') : '<p class="muted" style="font-size:13px;">Belum ada recruiter/PIC.</p>';
-
-  document.getElementById('maint-client-list').innerHTML = clients.length ? clients.map(c => `
-    <div class="maint-list-item">
-      <span>${escapeHtml(c.name)}</span>
-      <button class="link-btn danger" onclick="deleteClient('${c.id}')">Hapus</button>
-    </div>`).join('') : '<p class="muted" style="font-size:13px;">Belum ada client.</p>';
+  const listHtml = (arr, deleteFn) => arr.length ? arr.map(x => `
+    <div class="maint-list-item"><span>${escapeHtml(x.name)}</span><button class="link-btn danger" onclick="${deleteFn}('${x.id}')">Hapus</button></div>`).join('')
+    : '<p class="muted" style="font-size:13px;">Belum ada data.</p>';
+  document.getElementById('maint-recruiter-list').innerHTML = listHtml(recruiters, 'deleteRecruiter');
+  document.getElementById('maint-client-list').innerHTML = listHtml(clients, 'deleteClient');
+  document.getElementById('maint-source-list').innerHTML = listHtml(sources, 'deleteSource');
+  document.getElementById('maint-reason-list').innerHTML = listHtml(rejectionReasons, 'deleteRejectionReason');
 }
-
-document.getElementById('btn-add-recruiter').addEventListener('click', async () => {
-  const input = document.getElementById('maint-recruiter-input');
-  const name = input.value.trim();
-  if(!name) return;
-  if(recruiters.some(r=>r.name.toLowerCase()===name.toLowerCase())){ alert('Nama ini sudah ada di daftar.'); return; }
-  await apiPost('addRecruiter', { data: { name } });
-  input.value = '';
-  await loadData();
-});
-window.deleteRecruiter = async function(id){
-  if(!confirm('Hapus recruiter/PIC ini dari daftar?')) return;
-  await apiPost('deleteRecruiter', { id });
-  await loadData();
-};
-
-document.getElementById('btn-add-client').addEventListener('click', async () => {
-  const input = document.getElementById('maint-client-input');
-  const name = input.value.trim();
-  if(!name) return;
-  if(clients.some(c=>c.name.toLowerCase()===name.toLowerCase())){ alert('Nama ini sudah ada di daftar.'); return; }
-  await apiPost('addClient', { data: { name } });
-  input.value = '';
-  await loadData();
-});
-window.deleteClient = async function(id){
-  if(!confirm('Hapus client ini dari daftar?')) return;
-  await apiPost('deleteClient', { id });
-  await loadData();
-};
+function setupMaintAdd(btnId, inputId, list, action){
+  document.getElementById(btnId).addEventListener('click', async () => {
+    const input = document.getElementById(inputId);
+    const name = input.value.trim();
+    if(!name) return;
+    if(list.some(x=>x.name.toLowerCase()===name.toLowerCase())){ alert('Nama ini sudah ada di daftar.'); return; }
+    await apiPost(action, { data: { name } });
+    input.value = '';
+    await loadData();
+  });
+}
+setupMaintAdd('btn-add-recruiter','maint-recruiter-input', recruiters, 'addRecruiter');
+setupMaintAdd('btn-add-client','maint-client-input', clients, 'addClient');
+setupMaintAdd('btn-add-source','maint-source-input', sources, 'addSource');
+setupMaintAdd('btn-add-reason','maint-reason-input', rejectionReasons, 'addRejectionReason');
+window.deleteRecruiter = async function(id){ if(!confirm('Hapus dari daftar?')) return; await apiPost('deleteRecruiter', { id }); await loadData(); };
+window.deleteClient = async function(id){ if(!confirm('Hapus dari daftar?')) return; await apiPost('deleteClient', { id }); await loadData(); };
+window.deleteSource = async function(id){ if(!confirm('Hapus dari daftar?')) return; await apiPost('deleteSource', { id }); await loadData(); };
+window.deleteRejectionReason = async function(id){ if(!confirm('Hapus dari daftar?')) return; await apiPost('deleteRejectionReason', { id }); await loadData(); };
 
 loadData();
 </script>
