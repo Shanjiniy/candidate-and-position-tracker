@@ -87,7 +87,7 @@
 <body>
 <div class="wrap">
   <h1>Tracker Posisi & Kandidat</h1>
-  <p class="sub">Temu Kerja &mdash; open position & candidate pipeline, data tersimpan di Google Sheets kamu</p>
+  <p class="sub">Tiba-Tiba Kerja &mdash; open position & candidate pipeline, data tersimpan di Google Sheets kamu</p>
 
   <div class="setup-banner" id="setup-banner">
     ⚠️ Belum konek ke Google Sheets. Isi <code>APPS_SCRIPT_URL</code> di file index.html dengan URL Web App dari Apps Script kamu (lihat README_SETUP.md).
@@ -127,6 +127,7 @@
         <div class="field"><label>Experience required <span class="req">*</span></label><input id="p-experienceRequired" placeholder="misal: 3-5 tahun"/></div>
         <div class="field"><label>Salary range</label><input id="p-salaryRange" placeholder="misal: 15-20 juta"/></div>
         <div class="field"><label>Number of hiring</label><input id="p-numberOfHiring" type="number" min="1" placeholder="1"/></div>
+        <div class="field"><label>Request date</label><input id="p-requestDate" type="date"/></div>
         <div class="field"><label>PIC recruiter</label><input id="p-picRecruiter" placeholder="siapa yang handle"/></div>
         <div class="field"><label>Status <span class="req">*</span></label>
           <select id="p-status">
@@ -151,7 +152,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="pos-table">
         <thead><tr>
-          <th>Position</th><th>Client</th><th>Location</th><th>Type</th><th>Exp. req</th><th>Salary</th><th>Hiring</th><th>PIC</th><th>Status</th><th>Kandidat</th><th></th>
+          <th>Job ID</th><th>Position</th><th>Client</th><th>Location</th><th>Type</th><th>Exp. req</th><th>Salary</th><th>Hiring</th><th>Request date</th><th>PIC</th><th>Status</th><th>Kandidat</th><th></th>
         </tr></thead>
         <tbody id="pos-tbody"></tbody>
       </table>
@@ -163,9 +164,12 @@
   <!-- CANDIDATES -->
   <div class="panel" id="panel-candidates">
     <div class="toolbar">
-      <select class="filter" id="cand-filter">
-        <option value="all">Semua posisi</option>
-      </select>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select class="filter" id="cand-filter">
+          <option value="all">Semua posisi</option>
+        </select>
+        <input class="filter" id="cand-search" type="text" placeholder="Cari nama, kontak, skill, perusahaan..." style="min-width:240px;"/>
+      </div>
       <button class="btn" id="btn-add-candidate">+ Tambah kandidat</button>
     </div>
 
@@ -173,7 +177,7 @@
       <div class="form-grid">
         <div class="field"><label>Nama kandidat <span class="req">*</span></label><input id="c-name" placeholder="nama lengkap"/></div>
         <div class="field"><label>Kontak <span class="req">*</span></label><input id="c-contact" placeholder="no HP / email"/></div>
-        <div class="field"><label>Posisi <span class="req">*</span></label><select id="c-position"></select></div>
+        <div class="field"><label>Posisi (Job ID) <span class="req">*</span></label><select id="c-position"></select></div>
         <div class="field"><label>Stage <span class="req">*</span></label>
           <select id="c-stage">
             <option value="sourced">Sourced</option>
@@ -221,7 +225,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="cand-table">
         <thead><tr>
-          <th>Nama</th><th>Kontak</th><th>Posisi</th><th>Stage</th><th>Current</th><th>Total exp</th><th>Related exp</th><th>Skills</th><th>Exp. salary</th><th>Notice</th><th>CV</th><th>Catatan</th><th></th>
+          <th>Nama</th><th>Kontak</th><th>Job ID</th><th>Stage</th><th>Current</th><th>Total exp</th><th>Related exp</th><th>Skills</th><th>Exp. salary</th><th>Notice</th><th>CV</th><th>Catatan</th><th></th>
         </tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
@@ -232,7 +236,7 @@
 
 <script>
 // ==== GANTI DENGAN URL WEB APP APPS SCRIPT KAMU (lihat README_SETUP.md) ====
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0ze1wtLfiAxZiwg1RN__Ajq9_pB4kM19xB_G4InQi3cVVlEYM9Xs0qQ-YBONxjBE/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw78AwJwk3FI7RQ3-HjdW6g2u8HnojVB4mbvGy62lcGbYpM3mb_7FVNqmbKs5VAu60/exec";
 // =============================================================================
 
 let positions = [];
@@ -297,9 +301,9 @@ function renderPositionOptions(){
   const formSel = document.getElementById('c-position');
   const currentFilter = filterSel.value;
   filterSel.innerHTML = '<option value="all">Semua posisi</option>' +
-    positions.map(p => `<option value="${p.id}">${escapeHtml(p.client)} - ${escapeHtml(p.title)}</option>`).join('');
+    positions.map(p => `<option value="${p.id}">${escapeHtml(p.jobId)} - ${escapeHtml(p.title)} (${escapeHtml(p.client)})</option>`).join('');
   filterSel.value = currentFilter && [...filterSel.options].some(o=>o.value===currentFilter) ? currentFilter : 'all';
-  formSel.innerHTML = positions.map(p => `<option value="${p.id}">${escapeHtml(p.client)} - ${escapeHtml(p.title)}</option>`).join('');
+  formSel.innerHTML = positions.map(p => `<option value="${p.id}">${escapeHtml(p.jobId)} - ${escapeHtml(p.title)} (${escapeHtml(p.client)})</option>`).join('');
 }
 
 function escapeHtml(s){
@@ -320,6 +324,7 @@ function renderPositions(){
   tbody.innerHTML = rows.map(p => {
     const candCount = candidates.filter(c => c.positionId === p.id && c.stage !== 'rejected').length;
     return `<tr>
+      <td><strong>${escapeHtml(p.jobId)||'<span class="muted">-</span>'}</strong></td>
       <td class="position-name">${escapeHtml(p.title)}</td>
       <td>${escapeHtml(p.client)}</td>
       <td>${escapeHtml(p.workLocation)||'<span class="muted">-</span>'}</td>
@@ -327,6 +332,7 @@ function renderPositions(){
       <td>${escapeHtml(p.experienceRequired)||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(p.salaryRange)||'<span class="muted">-</span>'}</td>
       <td>${p.numberOfHiring||'<span class="muted">-</span>'}</td>
+      <td>${p.requestDate||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(p.picRecruiter)||'<span class="muted">-</span>'}</td>
       <td>
         <select class="inline-select b-${p.status}" onchange="quickUpdatePositionStatus('${p.id}', this.value, this)">
@@ -347,11 +353,19 @@ function renderPositions(){
 function renderCandidates(){
   const tbody = document.getElementById('cand-tbody');
   const filter = document.getElementById('cand-filter').value;
+  const search = document.getElementById('cand-search').value.trim().toLowerCase();
   let rows = candidates.filter(c => filter==='all' || c.positionId===filter);
+  if(search){
+    rows = rows.filter(c => {
+      const haystack = [c.name, c.contact, c.currentCompany, c.currentPosition, c.keySkills, c.notes]
+        .map(v=>(v||'').toLowerCase()).join(' ');
+      return haystack.includes(search);
+    });
+  }
   document.getElementById('cand-empty').style.display = rows.length ? 'none' : 'block';
   tbody.innerHTML = rows.map(c => {
     const pos = positions.find(p => p.id === c.positionId);
-    const posLabel = pos ? `${escapeHtml(pos.client)} - ${escapeHtml(pos.title)}` : '<span class="muted">posisi dihapus</span>';
+    const posLabel = pos ? `<strong>${escapeHtml(pos.jobId)}</strong><br><span class="muted" style="font-size:11px;">${escapeHtml(pos.title)}</span>` : '<span class="muted">posisi dihapus</span>';
     const cvHtml = c.cvUrl ? `<a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">Lihat CV</a>` : '<span class="muted">-</span>';
     return `<tr>
       <td>${escapeHtml(c.name)}</td>
@@ -389,11 +403,12 @@ document.querySelectorAll('.tab').forEach(tab => {
 
 document.getElementById('pos-filter').addEventListener('change', renderPositions);
 document.getElementById('cand-filter').addEventListener('change', renderCandidates);
+document.getElementById('cand-search').addEventListener('input', renderCandidates);
 
 // ---- POSITION FORM ----
 function resetPosForm(){
   ['title','client','workLocation','experienceRequired','salaryRange','numberOfHiring',
-   'picRecruiter','jobDescription','requirements','requiredSkills','preferredSkills'].forEach(f=>{
+   'requestDate','picRecruiter','jobDescription','requirements','requiredSkills','preferredSkills'].forEach(f=>{
     document.getElementById('p-'+f).value='';
   });
   document.getElementById('p-employmentType').value='';
@@ -421,6 +436,7 @@ document.getElementById('p-save').addEventListener('click', async () => {
     employmentType: document.getElementById('p-employmentType').value,
     salaryRange: document.getElementById('p-salaryRange').value.trim(),
     numberOfHiring: document.getElementById('p-numberOfHiring').value,
+    requestDate: document.getElementById('p-requestDate').value,
     picRecruiter: document.getElementById('p-picRecruiter').value.trim(),
     status: document.getElementById('p-status').value,
     jobDescription: document.getElementById('p-jobDescription').value.trim(),
@@ -453,6 +469,7 @@ window.editPosition = function(id){
   document.getElementById('p-experienceRequired').value=p.experienceRequired||'';
   document.getElementById('p-salaryRange').value=p.salaryRange||'';
   document.getElementById('p-numberOfHiring').value=p.numberOfHiring||'';
+  document.getElementById('p-requestDate').value=p.requestDate||'';
   document.getElementById('p-picRecruiter').value=p.picRecruiter||'';
   document.getElementById('p-status').value=p.status||'open';
   document.getElementById('p-jobDescription').value=p.jobDescription||'';
