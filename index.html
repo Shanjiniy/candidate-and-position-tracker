@@ -20,13 +20,13 @@
   *{box-sizing:border-box;font-family:'Poppins',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
   body{margin:0;background:var(--bg);color:var(--text);}
   .wrap{max-width:1900px;margin:0 auto;padding:24px 36px 60px;}
-  h1{font-size:20px;font-weight:600;margin:0 0 4px;}
+  h1{font-size:20px;font-weight:600;margin:0 0 4px;color:var(--text);}
   .sub{color:var(--text-2);font-size:13px;margin:0 0 20px;}
   .setup-banner{background:var(--amber-bg);color:var(--amber-text);border:1px solid #e8c98a;border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:16px;}
   .setup-banner code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px;}
   .tabs{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--border);}
   .tab{padding:10px 16px;font-size:14px;font-weight:500;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;user-select:none;}
-  .tab.active{color:var(--accent-text);border-bottom-color:var(--accent);}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
   .panel{display:none;}
   .panel.active{display:block;}
   .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
@@ -34,7 +34,7 @@
   .btn:hover{opacity:.9;}
   .btn:disabled{opacity:.5;cursor:not-allowed;}
   .btn.secondary{background:#fff;color:var(--text);border:1px solid var(--border-strong);}
-  select.filter{padding:8px 10px;border-radius:8px;border:1px solid var(--border-strong);font-size:13px;background:#fff;color:var(--text);}
+  select.filter, input.filter{padding:8px 10px;border-radius:8px;border:1px solid var(--border-strong);font-size:13px;background:#fff;color:var(--text);}
   .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,42,74,0.04);}
   .form-section-label{font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em;margin:14px 0 8px;}
   .form-section-label:first-child{margin-top:0;}
@@ -43,13 +43,13 @@
   .field{display:flex;flex-direction:column;gap:4px;}
   .field label{font-size:12px;color:var(--text-2);font-weight:500;}
   .field .req{color:var(--red);}
-  .field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--text);}
+  .field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;background:#fff;color:var(--text);}
   .field textarea{resize:vertical;min-height:50px;}
   .form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
-  table{width:100%;min-width:1400px;border-collapse:collapse;font-size:13px;}
-  th{text-align:left;font-weight:500;color:var(--text-2);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  table{width:100%;min-width:1500px;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-weight:600;color:var(--text-2);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
   td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top;}
-  tr:hover td{background:#fafaf8;}
+  tr:hover td{background:#F5F9FE;}
   .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
   .b-open{background:var(--green-bg);color:var(--green-text);}
   .b-onhold{background:var(--amber-bg);color:var(--amber-text);}
@@ -82,6 +82,22 @@
   .inline-select.b-offer{background:#F0E7FB;color:#5B3B96;border-color:transparent;}
   .inline-select.b-hired{background:var(--green-bg);color:var(--green-text);border-color:transparent;}
   .inline-select.b-rejected{background:var(--red-bg);color:var(--red-text);border-color:transparent;}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:0 1px 2px rgba(15,42,74,0.04);}
+  .stat-num{font-size:28px;font-weight:700;color:var(--accent);}
+  .stat-label{font-size:12px;color:var(--text-2);margin-top:4px;}
+  .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .breakdown-row:last-child{border-bottom:none;}
+  .breakdown-bar-wrap{flex:1;margin:0 12px;background:var(--accent-bg);border-radius:6px;height:8px;overflow:hidden;}
+  .breakdown-bar{height:100%;background:var(--accent);}
+  .dash-col-title{font-size:14px;font-weight:600;margin:0 0 12px;color:var(--text);}
+  .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .maint-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .maint-add-row{display:flex;gap:8px;margin-bottom:12px;}
+  .maint-add-row input{flex:1;}
+  .maint-list-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .maint-list-item:last-child{border-bottom:none;}
+  @media (max-width:900px){.dash-grid,.maint-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -90,16 +106,35 @@
   <p class="sub">Tiba-Tiba Kerja &mdash; open position & candidate pipeline, data tersimpan di Google Sheets kamu</p>
 
   <div class="setup-banner" id="setup-banner">
-    ⚠️ Belum konek ke Google Sheets. Isi <code>APPS_SCRIPT_URL</code> di file index.html dengan URL Web App dari Apps Script kamu (lihat README_SETUP.md).
+    Belum konek ke Google Sheets. Isi <code>APPS_SCRIPT_URL</code> di file index.html dengan URL Web App dari Apps Script kamu (lihat README_SETUP.md).
   </div>
 
   <div class="tabs">
-    <div class="tab active" data-tab="positions">Open Positions</div>
-    <div class="tab" data-tab="candidates">Kandidat</div>
+    <div class="tab active" data-tab="dashboard">Dashboard</div>
+    <div class="tab" data-tab="positions">Job Request</div>
+    <div class="tab" data-tab="candidates">Candidates</div>
+    <div class="tab" data-tab="maintenance">Maintenance</div>
   </div>
 
-  <!-- POSITIONS -->
-  <div class="panel active" id="panel-positions">
+  <div class="panel active" id="panel-dashboard">
+    <div class="stat-grid" id="dash-stats"></div>
+    <div class="dash-grid">
+      <div class="card">
+        <p class="dash-col-title">Job Request by Status</p>
+        <div id="dash-pos-status"></div>
+      </div>
+      <div class="card">
+        <p class="dash-col-title">Candidates by Stage</p>
+        <div id="dash-cand-stage"></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="dash-col-title">Posisi dengan kandidat paling sedikit (perlu sourcing)</p>
+      <div id="dash-low-candidates"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-positions">
     <div class="toolbar">
       <select class="filter" id="pos-filter">
         <option value="all">Semua status</option>
@@ -113,7 +148,7 @@
     <div class="card" id="pos-form" style="display:none;">
       <div class="form-grid">
         <div class="field"><label>Position name <span class="req">*</span></label><input id="p-title" placeholder="misal: Finance Manager"/></div>
-        <div class="field"><label>Client <span class="req">*</span></label><input id="p-client" placeholder="nama perusahaan klien"/></div>
+        <div class="field"><label>Client <span class="req">*</span></label><select id="p-client"></select></div>
         <div class="field"><label>Employment type</label>
           <select id="p-employmentType">
             <option value="">-</option>
@@ -128,7 +163,7 @@
         <div class="field"><label>Salary range</label><input id="p-salaryRange" placeholder="misal: 15-20 juta"/></div>
         <div class="field"><label>Number of hiring</label><input id="p-numberOfHiring" type="number" min="1" placeholder="1"/></div>
         <div class="field"><label>Request date</label><input id="p-requestDate" type="date"/></div>
-        <div class="field"><label>PIC recruiter</label><input id="p-picRecruiter" placeholder="siapa yang handle"/></div>
+        <div class="field"><label>PIC recruiter</label><select id="p-picRecruiter"></select></div>
         <div class="field"><label>Status <span class="req">*</span></label>
           <select id="p-status">
             <option value="open">Open</option>
@@ -161,7 +196,6 @@
     </div>
   </div>
 
-  <!-- CANDIDATES -->
   <div class="panel" id="panel-candidates">
     <div class="toolbar">
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -183,7 +217,8 @@
     <div class="card" id="cand-form" style="display:none;">
       <div class="form-grid">
         <div class="field"><label>Nama kandidat <span class="req">*</span></label><input id="c-name" placeholder="nama lengkap"/></div>
-        <div class="field"><label>Kontak <span class="req">*</span></label><input id="c-contact" placeholder="no HP / email"/></div>
+        <div class="field"><label>No. HP <span class="req">*</span></label><input id="c-phone" placeholder="misal: 081234567890"/></div>
+        <div class="field"><label>Email</label><input id="c-email" type="email" placeholder="email@contoh.com"/></div>
         <div class="field"><label>Posisi (Job ID) <span class="req">*</span></label><select id="c-position"></select></div>
         <div class="field"><label>Stage <span class="req">*</span></label>
           <select id="c-stage">
@@ -206,7 +241,7 @@
         <div class="field"><label>Total working experience <span class="req">*</span></label><input id="c-totalExperience" placeholder="misal: 6 tahun"/></div>
         <div class="field"><label>Related experience <span class="req">*</span></label><input id="c-relatedExperience" placeholder="misal: 4 tahun di bidang relevan"/></div>
         <div class="field"><label>Education</label><input id="c-education" placeholder="misal: S1 Teknik Informatika - UI"/></div>
-        <div class="field"><label>Recruiter (PIC)</label><input id="c-recruiter" placeholder="siapa yang handle kandidat ini"/></div>
+        <div class="field"><label>Recruiter (PIC)</label><select id="c-recruiter"></select></div>
       </div>
 
       <div class="form-section-label">Skill & ekspektasi</div>
@@ -234,7 +269,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="cand-table">
         <thead><tr>
-          <th>Nama</th><th>Kontak</th><th>Job ID</th><th>Stage</th><th>Current</th><th>Education</th><th>Total exp</th><th>Related exp</th><th>Skills</th><th>Exp. salary</th><th>Notice</th><th>Recruiter</th><th>CV</th><th>Catatan</th><th></th>
+          <th>Nama</th><th>No. HP</th><th>Email</th><th>Job ID</th><th>Applied Position</th><th>Stage</th><th>Current</th><th>Education</th><th>Total exp</th><th>Related exp</th><th>Skills</th><th>Exp. salary</th><th>Notice</th><th>Recruiter</th><th>CV</th><th>Catatan</th><th></th>
         </tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
@@ -242,15 +277,36 @@
     </div>
     <input type="file" id="row-cv-input" accept=".pdf,.doc,.docx" style="display:none;"/>
   </div>
+
+  <div class="panel" id="panel-maintenance">
+    <div class="maint-grid">
+      <div class="card">
+        <p class="dash-col-title">Recruiter / PIC</p>
+        <div class="maint-add-row">
+          <input id="maint-recruiter-input" placeholder="Nama recruiter/PIC baru"/>
+          <button class="btn" id="btn-add-recruiter">Tambah</button>
+        </div>
+        <div id="maint-recruiter-list"></div>
+      </div>
+      <div class="card">
+        <p class="dash-col-title">Client</p>
+        <div class="maint-add-row">
+          <input id="maint-client-input" placeholder="Nama client baru"/>
+          <button class="btn" id="btn-add-client">Tambah</button>
+        </div>
+        <div id="maint-client-list"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-// ==== GANTI DENGAN URL WEB APP APPS SCRIPT KAMU (lihat README_SETUP.md) ====
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-qfSpFlKEe-Acc6KpWbPqY3bcnRoRVpRqN7bfmDSnFArDlemscgKeSHm31x3YLI0/exec";
-// =============================================================================
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwr3SzELEyH4eQP282zT2KdEYKCNfV1ltFk2y9Qx0-eibZYiXsf95Ll1DLwIfUyplU/exec";
 
 let positions = [];
 let candidates = [];
+let recruiters = [];
+let clients = [];
 let editingPosId = null;
 let editingCandId = null;
 
@@ -282,7 +338,6 @@ function fileToBase64(file){
   });
 }
 
-// Normalisasi nomor HP biar 0812xxx, +62812xxx, 62812xxx dianggap sama
 function normalizePhone(str){
   if(!str) return '';
   let digits = String(str).replace(/[^\d]/g, '');
@@ -291,17 +346,14 @@ function normalizePhone(str){
   else if(digits) digits = '62' + digits;
   return digits;
 }
-
 function looksLikePhone(str){
   const digits = String(str||'').replace(/[^\d]/g, '');
   return digits.length >= 8;
 }
-
-// Cari kandidat lain dengan nomor HP yang sama (opsional exclude 1 id, misal pas edit)
-function findDuplicateByPhone(contact, excludeId){
-  const norm = normalizePhone(contact);
-  if(!norm || !looksLikePhone(contact)) return null;
-  return candidates.find(c => c.id !== excludeId && normalizePhone(c.contact) === norm) || null;
+function findDuplicateByPhone(phone, excludeId){
+  const norm = normalizePhone(phone);
+  if(!norm || !looksLikePhone(phone)) return null;
+  return candidates.find(c => c.id !== excludeId && normalizePhone(c.phone) === norm) || null;
 }
 
 async function loadData(){
@@ -314,6 +366,8 @@ async function loadData(){
     const data = await apiGetAll();
     positions = data.positions || [];
     candidates = data.candidates || [];
+    recruiters = data.recruiters || [];
+    clients = data.clients || [];
   }catch(e){
     document.getElementById('pos-loading').textContent = 'Gagal memuat data. Cek koneksi / URL Apps Script.';
     return;
@@ -323,9 +377,78 @@ async function loadData(){
 }
 
 function renderAll(){
+  renderDashboard();
   renderPositions();
   renderCandidates();
   renderPositionOptions();
+  renderRecruiterOptions();
+  renderClientOptions();
+  renderMaintenance();
+}
+
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function tagList(str){
+  return (str||'').split(',').map(s=>s.trim()).filter(Boolean)
+    .map(s=>`<span class="tag">${escapeHtml(s)}</span>`).join('');
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+    if(tab.dataset.tab === 'dashboard') renderDashboard();
+  });
+});
+
+function renderDashboard(){
+  const openPositions = positions.filter(p=>p.status==='open').length;
+  const totalCandidates = candidates.length;
+  const hired = candidates.filter(c=>c.stage==='hired').length;
+  const activePipeline = candidates.filter(c=>!['hired','rejected'].includes(c.stage)).length;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${positions.length}</div><div class="stat-label">Total Job Request</div></div>
+    <div class="stat-card"><div class="stat-num">${openPositions}</div><div class="stat-label">Posisi Open</div></div>
+    <div class="stat-card"><div class="stat-num">${totalCandidates}</div><div class="stat-label">Total Kandidat</div></div>
+    <div class="stat-card"><div class="stat-num">${activePipeline}</div><div class="stat-label">Pipeline Aktif</div></div>
+    <div class="stat-card"><div class="stat-num">${hired}</div><div class="stat-label">Hired</div></div>
+  `;
+
+  const posStatusCounts = {open:0, onhold:0, closed:0};
+  positions.forEach(p => { if(posStatusCounts[p.status]!==undefined) posStatusCounts[p.status]++; });
+  const maxPos = Math.max(1, ...Object.values(posStatusCounts));
+  document.getElementById('dash-pos-status').innerHTML = Object.keys(posStatusCounts).map(k => `
+    <div class="breakdown-row">
+      <span>${posStatusLabel[k]}</span>
+      <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${(posStatusCounts[k]/maxPos*100)}%;"></div></div>
+      <strong>${posStatusCounts[k]}</strong>
+    </div>`).join('');
+
+  const stageCounts = {};
+  Object.keys(stageLabel).forEach(s => stageCounts[s]=0);
+  candidates.forEach(c => { if(stageCounts[c.stage]!==undefined) stageCounts[c.stage]++; });
+  const maxStage = Math.max(1, ...Object.values(stageCounts));
+  document.getElementById('dash-cand-stage').innerHTML = Object.keys(stageCounts).map(k => `
+    <div class="breakdown-row">
+      <span>${stageLabel[k]}</span>
+      <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${(stageCounts[k]/maxStage*100)}%;"></div></div>
+      <strong>${stageCounts[k]}</strong>
+    </div>`).join('');
+
+  const openPos = positions.filter(p=>p.status==='open').map(p => ({
+    ...p,
+    candCount: candidates.filter(c=>c.positionId===p.id && !['rejected'].includes(c.stage)).length
+  })).sort((a,b)=>a.candCount-b.candCount).slice(0,5);
+  document.getElementById('dash-low-candidates').innerHTML = openPos.length ? openPos.map(p => `
+    <div class="breakdown-row">
+      <span><strong>${escapeHtml(p.jobId)}</strong> - ${escapeHtml(p.title)} (${escapeHtml(p.client)})</span>
+      <strong>${p.candCount} kandidat</strong>
+    </div>`).join('') : '<p class="muted" style="font-size:13px;">Belum ada posisi open.</p>';
 }
 
 function renderPositionOptions(){
@@ -338,14 +461,20 @@ function renderPositionOptions(){
   formSel.innerHTML = positions.map(p => `<option value="${p.id}">${escapeHtml(p.jobId)} - ${escapeHtml(p.title)} (${escapeHtml(p.client)})</option>`).join('');
 }
 
-function escapeHtml(s){
-  if(!s) return '';
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function renderRecruiterOptions(){
+  const opts = '<option value="">-</option>' + recruiters.map(r=>`<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}</option>`).join('');
+  const posSel = document.getElementById('p-picRecruiter');
+  const candSel = document.getElementById('c-recruiter');
+  const posVal = posSel.value, candVal = candSel.value;
+  posSel.innerHTML = opts; posSel.value = posVal;
+  candSel.innerHTML = opts; candSel.value = candVal;
 }
 
-function tagList(str){
-  return (str||'').split(',').map(s=>s.trim()).filter(Boolean)
-    .map(s=>`<span class="tag">${escapeHtml(s)}</span>`).join('');
+function renderClientOptions(){
+  const sel = document.getElementById('p-client');
+  const val = sel.value;
+  sel.innerHTML = '<option value="">- pilih client -</option>' + clients.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+  sel.value = val;
 }
 
 function renderPositions(){
@@ -382,77 +511,22 @@ function renderPositions(){
   }).join('');
 }
 
-function renderCandidates(){
-  const tbody = document.getElementById('cand-tbody');
-  const filter = document.getElementById('cand-filter').value;
-  const search = document.getElementById('cand-search').value.trim().toLowerCase();
-  let rows = candidates.filter(c => filter==='all' || c.positionId===filter);
-  if(search){
-    rows = rows.filter(c => {
-      const haystack = [c.name, c.contact, c.currentCompany, c.currentPosition, c.keySkills, c.notes]
-        .map(v=>(v||'').toLowerCase()).join(' ');
-      return haystack.includes(search);
-    });
-  }
-  document.getElementById('cand-empty').style.display = rows.length ? 'none' : 'block';
-  tbody.innerHTML = rows.map(c => {
-    const pos = positions.find(p => p.id === c.positionId);
-    const posLabel = pos ? `<strong>${escapeHtml(pos.jobId)}</strong><br><span class="muted" style="font-size:11px;">${escapeHtml(pos.title)}</span>` : '<span class="muted">posisi dihapus</span>';
-    const cvHtml = c.cvUrl
-      ? `<a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">Lihat CV</a>`
-      : `<button class="link-btn" onclick="triggerCvUpload('${c.id}')" style="color:var(--amber);">+ Upload CV</button>`;
-    return `<tr>
-      <td>${escapeHtml(c.name)}</td>
-      <td>${escapeHtml(c.contact)||'<span class="muted">-</span>'}</td>
-      <td>${posLabel}</td>
-      <td>
-        <select class="inline-select b-${c.stage}" onchange="quickUpdateCandidateStage('${c.id}', this.value, this)">
-          ${Object.keys(stageLabel).map(s=>`<option value="${s}" ${c.stage===s?'selected':''}>${stageLabel[s]}</option>`).join('')}
-        </select>
-      </td>
-      <td style="max-width:150px;">${escapeHtml(c.currentPosition)||''}${c.currentPosition&&c.currentCompany?' @ ':''}${escapeHtml(c.currentCompany)||''}</td>
-      <td style="max-width:140px;">${escapeHtml(c.education)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.totalExperience)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.relatedExperience)||'<span class="muted">-</span>'}</td>
-      <td style="max-width:180px;">${tagList(c.keySkills)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.expectedSalary)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.noticePeriod)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.recruiter)||'<span class="muted">-</span>'}</td>
-      <td>${cvHtml}</td>
-      <td style="max-width:160px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
-      <td>
-        <button class="link-btn" onclick="editCandidate('${c.id}')">Edit</button>
-        <button class="link-btn danger" onclick="deleteCandidate('${c.id}')">Hapus</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
-  });
-});
-
 document.getElementById('pos-filter').addEventListener('change', renderPositions);
-document.getElementById('cand-filter').addEventListener('change', renderCandidates);
-document.getElementById('cand-search').addEventListener('input', renderCandidates);
 
-// ---- POSITION FORM ----
 function resetPosForm(){
-  ['title','client','workLocation','experienceRequired','salaryRange','numberOfHiring',
-   'requestDate','picRecruiter','jobDescription','requirements','requiredSkills','preferredSkills'].forEach(f=>{
+  ['title','workLocation','experienceRequired','salaryRange','numberOfHiring',
+   'requestDate','jobDescription','requirements','requiredSkills','preferredSkills'].forEach(f=>{
     document.getElementById('p-'+f).value='';
   });
+  document.getElementById('p-client').value='';
   document.getElementById('p-employmentType').value='';
+  document.getElementById('p-picRecruiter').value='';
   document.getElementById('p-status').value='open';
   editingPosId = null;
 }
 document.getElementById('btn-add-position').addEventListener('click', () => {
   if(!isConfigured()){ alert('Setup Apps Script URL dulu di index.html, lihat README_SETUP.md'); return; }
+  if(clients.length===0){ alert('Tambahkan client dulu di tab Maintenance sebelum bikin posisi.'); return; }
   resetPosForm();
   document.getElementById('pos-form').style.display='block';
 });
@@ -461,7 +535,7 @@ document.getElementById('p-cancel').addEventListener('click', () => {
 });
 document.getElementById('p-save').addEventListener('click', async () => {
   const title = document.getElementById('p-title').value.trim();
-  const client = document.getElementById('p-client').value.trim();
+  const client = document.getElementById('p-client').value;
   const workLocation = document.getElementById('p-workLocation').value.trim();
   const experienceRequired = document.getElementById('p-experienceRequired').value.trim();
   if(!title || !client || !workLocation || !experienceRequired){
@@ -473,7 +547,7 @@ document.getElementById('p-save').addEventListener('click', async () => {
     salaryRange: document.getElementById('p-salaryRange').value.trim(),
     numberOfHiring: document.getElementById('p-numberOfHiring').value,
     requestDate: document.getElementById('p-requestDate').value,
-    picRecruiter: document.getElementById('p-picRecruiter').value.trim(),
+    picRecruiter: document.getElementById('p-picRecruiter').value,
     status: document.getElementById('p-status').value,
     jobDescription: document.getElementById('p-jobDescription').value.trim(),
     requirements: document.getElementById('p-requirements').value.trim(),
@@ -520,7 +594,6 @@ window.deletePosition = async function(id){
   await apiPost('deletePosition', { id });
   await loadData();
 };
-
 window.quickUpdatePositionStatus = async function(id, newStatus, selectEl){
   const oldClass = [...selectEl.classList].find(c=>c.startsWith('b-'));
   selectEl.classList.remove(oldClass);
@@ -537,29 +610,64 @@ window.quickUpdatePositionStatus = async function(id, newStatus, selectEl){
   selectEl.disabled = false;
 };
 
-window.quickUpdateCandidateStage = async function(id, newStage, selectEl){
-  const oldClass = [...selectEl.classList].find(c=>c.startsWith('b-'));
-  selectEl.classList.remove(oldClass);
-  selectEl.classList.add('b-'+newStage);
-  selectEl.disabled = true;
-  try{
-    await apiPost('updateCandidate', { id, data: { stage: newStage } });
-    const c = candidates.find(x=>x.id===id);
-    if(c) c.stage = newStage;
-  }catch(e){
-    alert('Gagal update stage. Coba lagi.');
-    await loadData();
+function renderCandidates(){
+  const tbody = document.getElementById('cand-tbody');
+  const filter = document.getElementById('cand-filter').value;
+  const search = document.getElementById('cand-search').value.trim().toLowerCase();
+  let rows = candidates.filter(c => filter==='all' || c.positionId===filter);
+  if(search){
+    rows = rows.filter(c => {
+      const haystack = [c.name, c.phone, c.email, c.currentCompany, c.currentPosition, c.keySkills, c.notes]
+        .map(v=>(v||'').toLowerCase()).join(' ');
+      return haystack.includes(search);
+    });
   }
-  selectEl.disabled = false;
-};
+  document.getElementById('cand-empty').style.display = rows.length ? 'none' : 'block';
+  tbody.innerHTML = rows.map(c => {
+    const pos = positions.find(p => p.id === c.positionId);
+    const jobIdLabel = pos ? escapeHtml(pos.jobId) : '<span class="muted">-</span>';
+    const posTitleLabel = pos ? `${escapeHtml(pos.title)} <span class="muted" style="font-size:11px;">(${escapeHtml(pos.client)})</span>` : '<span class="muted">posisi dihapus</span>';
+    const cvHtml = c.cvUrl
+      ? `<a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">Lihat CV</a>`
+      : `<button class="link-btn" onclick="triggerCvUpload('${c.id}')" style="color:var(--amber);">+ Upload CV</button>`;
+    return `<tr>
+      <td>${escapeHtml(c.name)}</td>
+      <td>${escapeHtml(c.phone)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.email)||'<span class="muted">-</span>'}</td>
+      <td><strong>${jobIdLabel}</strong></td>
+      <td style="max-width:160px;">${posTitleLabel}</td>
+      <td>
+        <select class="inline-select b-${c.stage}" onchange="quickUpdateCandidateStage('${c.id}', this.value, this)">
+          ${Object.keys(stageLabel).map(s=>`<option value="${s}" ${c.stage===s?'selected':''}>${stageLabel[s]}</option>`).join('')}
+        </select>
+      </td>
+      <td style="max-width:150px;">${escapeHtml(c.currentPosition)||''}${c.currentPosition&&c.currentCompany?' @ ':''}${escapeHtml(c.currentCompany)||''}</td>
+      <td style="max-width:140px;">${escapeHtml(c.education)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.totalExperience)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.relatedExperience)||'<span class="muted">-</span>'}</td>
+      <td style="max-width:180px;">${tagList(c.keySkills)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.expectedSalary)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.noticePeriod)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.recruiter)||'<span class="muted">-</span>'}</td>
+      <td>${cvHtml}</td>
+      <td style="max-width:160px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
+      <td>
+        <button class="link-btn" onclick="editCandidate('${c.id}')">Edit</button>
+        <button class="link-btn danger" onclick="deleteCandidate('${c.id}')">Hapus</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+document.getElementById('cand-filter').addEventListener('change', renderCandidates);
+document.getElementById('cand-search').addEventListener('input', renderCandidates);
 
-// ---- CANDIDATE FORM ----
 function resetCandForm(){
-  ['name','contact','currentCompany','currentPosition','totalExperience','relatedExperience',
-   'education','recruiter','keySkills','expectedSalary','noticePeriod','notes'].forEach(f=>{
+  ['name','phone','email','currentCompany','currentPosition','totalExperience','relatedExperience',
+   'education','keySkills','expectedSalary','noticePeriod','notes'].forEach(f=>{
     document.getElementById('c-'+f).value='';
   });
   document.getElementById('c-position').value = positions[0]?.id || '';
+  document.getElementById('c-recruiter').value='';
   document.getElementById('c-stage').value='sourced';
   document.getElementById('c-cvFile').value='';
   document.getElementById('c-cv-current').innerHTML='';
@@ -576,7 +684,8 @@ document.getElementById('c-cancel').addEventListener('click', () => {
 });
 document.getElementById('c-save').addEventListener('click', async () => {
   const name = document.getElementById('c-name').value.trim();
-  const contact = document.getElementById('c-contact').value.trim();
+  const phone = document.getElementById('c-phone').value.trim();
+  const email = document.getElementById('c-email').value.trim();
   const currentCompany = document.getElementById('c-currentCompany').value.trim();
   const currentPosition = document.getElementById('c-currentPosition').value.trim();
   const totalExperience = document.getElementById('c-totalExperience').value.trim();
@@ -586,7 +695,7 @@ document.getElementById('c-save').addEventListener('click', async () => {
   const noticePeriod = document.getElementById('c-noticePeriod').value.trim();
   const cvFile = document.getElementById('c-cvFile').files[0];
 
-  if(!name || !contact || !currentCompany || !currentPosition || !totalExperience ||
+  if(!name || !phone || !currentCompany || !currentPosition || !totalExperience ||
      !relatedExperience || !keySkills || !expectedSalary || !noticePeriod){
     alert('Semua field wajib (*) harus diisi'); return;
   }
@@ -594,22 +703,21 @@ document.getElementById('c-save').addEventListener('click', async () => {
     alert('Upload CV wajib untuk kandidat baru'); return;
   }
 
-  const dup = findDuplicateByPhone(contact, editingCandId);
+  const dup = findDuplicateByPhone(phone, editingCandId);
   if(dup){
     const posOfDup = positions.find(p=>p.id===dup.positionId);
     const posLabel = posOfDup ? `${posOfDup.jobId} - ${posOfDup.title}` : 'posisi tidak diketahui';
     const proceed = confirm(
-      `Nomor ini sudah terdaftar atas nama "${dup.name}" (${posLabel}, stage: ${stageLabel[dup.stage]||dup.stage}).\n\n` +
-      `Tetap simpan sebagai entri baru?`
+      `Nomor ini sudah terdaftar atas nama "${dup.name}" (${posLabel}, stage: ${stageLabel[dup.stage]||dup.stage}).\n\nTetap simpan sebagai entri baru?`
     );
     if(!proceed) return;
   }
 
   const data = {
-    name, contact, currentCompany, currentPosition, totalExperience,
+    name, phone, email, currentCompany, currentPosition, totalExperience,
     relatedExperience, keySkills, expectedSalary, noticePeriod,
     education: document.getElementById('c-education').value.trim(),
-    recruiter: document.getElementById('c-recruiter').value.trim(),
+    recruiter: document.getElementById('c-recruiter').value,
     positionId: document.getElementById('c-position').value,
     stage: document.getElementById('c-stage').value,
     notes: document.getElementById('c-notes').value.trim(),
@@ -641,7 +749,8 @@ window.editCandidate = function(id){
   if(!c) return;
   editingCandId = id;
   document.getElementById('c-name').value=c.name||'';
-  document.getElementById('c-contact').value=c.contact||'';
+  document.getElementById('c-phone').value=c.phone||'';
+  document.getElementById('c-email').value=c.email||'';
   document.getElementById('c-position').value=c.positionId;
   document.getElementById('c-stage').value=c.stage;
   document.getElementById('c-currentCompany').value=c.currentCompany||'';
@@ -666,8 +775,22 @@ window.deleteCandidate = async function(id){
   await apiPost('deleteCandidate', { id });
   await loadData();
 };
+window.quickUpdateCandidateStage = async function(id, newStage, selectEl){
+  const oldClass = [...selectEl.classList].find(c=>c.startsWith('b-'));
+  selectEl.classList.remove(oldClass);
+  selectEl.classList.add('b-'+newStage);
+  selectEl.disabled = true;
+  try{
+    await apiPost('updateCandidate', { id, data: { stage: newStage } });
+    const c = candidates.find(x=>x.id===id);
+    if(c) c.stage = newStage;
+  }catch(e){
+    alert('Gagal update stage. Coba lagi.');
+    await loadData();
+  }
+  selectEl.disabled = false;
+};
 
-// ---- UPLOAD CV LANGSUNG DARI TABEL ----
 let pendingCvCandidateId = null;
 window.triggerCvUpload = function(id){
   pendingCvCandidateId = id;
@@ -691,11 +814,10 @@ document.getElementById('row-cv-input').addEventListener('change', async (e) => 
   }
 });
 
-// ---- TEMPLATE CSV ----
-const CSV_HEADERS = ['jobId','name','contact','stage','currentCompany','currentPosition','totalExperience','relatedExperience','education','recruiter','keySkills','expectedSalary','noticePeriod','notes'];
+const CSV_HEADERS = ['jobId','name','phone','email','stage','currentCompany','currentPosition','totalExperience','relatedExperience','education','recruiter','keySkills','expectedSalary','noticePeriod','notes'];
 
 document.getElementById('btn-download-template').addEventListener('click', () => {
-  const sampleRow = ['JOB-0001','Nama Kandidat','081234567890','sourced','PT Contoh','Staff Finance','3 tahun','2 tahun','S1 Akuntansi','Nama Recruiter','Excel, SAP','10 juta','1 bulan','contoh catatan'];
+  const sampleRow = ['JOB-0001','Nama Kandidat','081234567890','nama@email.com','sourced','PT Contoh','Staff Finance','3 tahun','2 tahun','S1 Akuntansi','Nama Recruiter','Excel, SAP','10 juta','1 bulan','contoh catatan'];
   const csv = CSV_HEADERS.join(',') + '\n' + sampleRow.map(v=>`"${v}"`).join(',');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -705,7 +827,6 @@ document.getElementById('btn-download-template').addEventListener('click', () =>
   URL.revokeObjectURL(url);
 });
 
-// ---- BULK UPLOAD ----
 function parseCSV(text){
   const lines = text.replace(/\r/g,'').split('\n').filter(l => l.trim().length > 0);
   if(lines.length < 2) return [];
@@ -762,11 +883,11 @@ document.getElementById('bulk-file-input').addEventListener('change', async (e) 
 
   for(const row of rows){
     const name = (row.name||'').trim();
-    const contact = (row.contact||'').trim();
+    const phone = (row.phone||'').trim();
     const jobId = (row.jobId||'').trim();
 
-    if(!name || !contact){
-      failed.push(`${name||'(tanpa nama)'}: nama/kontak kosong`);
+    if(!name || !phone){
+      failed.push(`${name||'(tanpa nama)'}: nama/no HP kosong`);
       continue;
     }
 
@@ -776,17 +897,18 @@ document.getElementById('bulk-file-input').addEventListener('change', async (e) 
       continue;
     }
 
-    const normPhone = normalizePhone(contact);
-    const dupExisting = findDuplicateByPhone(contact, null);
+    const normPhone = normalizePhone(phone);
+    const dupExisting = findDuplicateByPhone(phone, null);
     const dupInBatch = seenPhonesInBatch.includes(normPhone);
     if(dupExisting || dupInBatch){
-      skippedDup.push(`${name} (${contact})${dupExisting ? ' - sudah ada: '+dupExisting.name : ' - duplikat dalam file'}`);
+      skippedDup.push(`${name} (${phone})${dupExisting ? ' - sudah ada: '+dupExisting.name : ' - duplikat dalam file'}`);
       continue;
     }
 
     const stage = (row.stage||'sourced').trim().toLowerCase();
     const data = {
-      name, contact,
+      name, phone,
+      email: row.email||'',
       positionId: pos.id,
       stage: stageLabel[stage] ? stage : 'sourced',
       currentCompany: row.currentCompany||'',
@@ -825,6 +947,50 @@ document.getElementById('bulk-file-input').addEventListener('change', async (e) 
   html += `<div class="form-actions"><button class="btn secondary" onclick="document.getElementById('bulk-result').style.display='none';">Tutup</button></div>`;
   resultBox.innerHTML = html;
 });
+
+function renderMaintenance(){
+  document.getElementById('maint-recruiter-list').innerHTML = recruiters.length ? recruiters.map(r => `
+    <div class="maint-list-item">
+      <span>${escapeHtml(r.name)}</span>
+      <button class="link-btn danger" onclick="deleteRecruiter('${r.id}')">Hapus</button>
+    </div>`).join('') : '<p class="muted" style="font-size:13px;">Belum ada recruiter/PIC.</p>';
+
+  document.getElementById('maint-client-list').innerHTML = clients.length ? clients.map(c => `
+    <div class="maint-list-item">
+      <span>${escapeHtml(c.name)}</span>
+      <button class="link-btn danger" onclick="deleteClient('${c.id}')">Hapus</button>
+    </div>`).join('') : '<p class="muted" style="font-size:13px;">Belum ada client.</p>';
+}
+
+document.getElementById('btn-add-recruiter').addEventListener('click', async () => {
+  const input = document.getElementById('maint-recruiter-input');
+  const name = input.value.trim();
+  if(!name) return;
+  if(recruiters.some(r=>r.name.toLowerCase()===name.toLowerCase())){ alert('Nama ini sudah ada di daftar.'); return; }
+  await apiPost('addRecruiter', { data: { name } });
+  input.value = '';
+  await loadData();
+});
+window.deleteRecruiter = async function(id){
+  if(!confirm('Hapus recruiter/PIC ini dari daftar?')) return;
+  await apiPost('deleteRecruiter', { id });
+  await loadData();
+};
+
+document.getElementById('btn-add-client').addEventListener('click', async () => {
+  const input = document.getElementById('maint-client-input');
+  const name = input.value.trim();
+  if(!name) return;
+  if(clients.some(c=>c.name.toLowerCase()===name.toLowerCase())){ alert('Nama ini sudah ada di daftar.'); return; }
+  await apiPost('addClient', { data: { name } });
+  input.value = '';
+  await loadData();
+});
+window.deleteClient = async function(id){
+  if(!confirm('Hapus client ini dari daftar?')) return;
+  await apiPost('deleteClient', { id });
+  await loadData();
+};
 
 loadData();
 </script>
