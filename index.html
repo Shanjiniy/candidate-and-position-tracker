@@ -9,17 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f7f6f2; --card:#ffffff; --border:#e2e0d8; --border-strong:#c9c6ba;
-    --text:#1f1e1b; --text-2:#6b6a63; --text-3:#9a988e;
-    --accent:#378ADD; --accent-bg:#E6F1FB; --accent-text:#0C447C;
-    --green:#639922; --green-bg:#EAF3DE; --green-text:#27500A;
-    --amber:#BA7517; --amber-bg:#FAEEDA; --amber-text:#633806;
-    --red:#A32D2D; --red-bg:#FCEBEB; --red-text:#791F1F;
+    --bg:#EAF2FB; --card:#ffffff; --border:#D3E3F5; --border-strong:#AFC9E8;
+    --text:#0F2A4A; --text-2:#3B5578; --text-3:#7C93B0;
+    --accent:#2563AF; --accent-bg:#DCEAFB; --accent-text:#0F2A4A;
+    --green:#4C8A4C; --green-bg:#E4F3E4; --green-text:#1F4D1F;
+    --amber:#B5791A; --amber-bg:#FBEFD9; --amber-text:#5C3B0A;
+    --red:#B03A3A; --red-bg:#FBE7E7; --red-text:#6B1F1F;
     --radius:10px;
   }
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:'Poppins',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-  .wrap{max-width:1200px;margin:0 auto;padding:24px 20px 60px;}
+  *{box-sizing:border-box;font-family:'Poppins',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  body{margin:0;background:var(--bg);color:var(--text);}
+  .wrap{max-width:1900px;margin:0 auto;padding:24px 36px 60px;}
   h1{font-size:20px;font-weight:600;margin:0 0 4px;}
   .sub{color:var(--text-2);font-size:13px;margin:0 0 20px;}
   .setup-banner{background:var(--amber-bg);color:var(--amber-text);border:1px solid #e8c98a;border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:16px;}
@@ -35,7 +35,7 @@
   .btn:disabled{opacity:.5;cursor:not-allowed;}
   .btn.secondary{background:#fff;color:var(--text);border:1px solid var(--border-strong);}
   select.filter{padding:8px 10px;border-radius:8px;border:1px solid var(--border-strong);font-size:13px;background:#fff;color:var(--text);}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,42,74,0.04);}
   .form-section-label{font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.03em;margin:14px 0 8px;}
   .form-section-label:first-child{margin-top:0;}
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:4px;}
@@ -46,7 +46,7 @@
   .field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--text);}
   .field textarea{resize:vertical;min-height:50px;}
   .form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
-  table{width:100%;border-collapse:collapse;font-size:13px;}
+  table{width:100%;min-width:1400px;border-collapse:collapse;font-size:13px;}
   th{text-align:left;font-weight:500;color:var(--text-2);font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
   td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top;}
   tr:hover td{background:#fafaf8;}
@@ -205,6 +205,8 @@
         <div class="field"><label>Current position <span class="req">*</span></label><input id="c-currentPosition" placeholder="jabatan sekarang/terakhir"/></div>
         <div class="field"><label>Total working experience <span class="req">*</span></label><input id="c-totalExperience" placeholder="misal: 6 tahun"/></div>
         <div class="field"><label>Related experience <span class="req">*</span></label><input id="c-relatedExperience" placeholder="misal: 4 tahun di bidang relevan"/></div>
+        <div class="field"><label>Education</label><input id="c-education" placeholder="misal: S1 Teknik Informatika - UI"/></div>
+        <div class="field"><label>Recruiter (PIC)</label><input id="c-recruiter" placeholder="siapa yang handle kandidat ini"/></div>
       </div>
 
       <div class="form-section-label">Skill & ekspektasi</div>
@@ -232,7 +234,7 @@
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="cand-table">
         <thead><tr>
-          <th>Nama</th><th>Kontak</th><th>Job ID</th><th>Stage</th><th>Current</th><th>Total exp</th><th>Related exp</th><th>Skills</th><th>Exp. salary</th><th>Notice</th><th>CV</th><th>Catatan</th><th></th>
+          <th>Nama</th><th>Kontak</th><th>Job ID</th><th>Stage</th><th>Current</th><th>Education</th><th>Total exp</th><th>Related exp</th><th>Skills</th><th>Exp. salary</th><th>Notice</th><th>Recruiter</th><th>CV</th><th>Catatan</th><th></th>
         </tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
@@ -244,7 +246,7 @@
 
 <script>
 // ==== GANTI DENGAN URL WEB APP APPS SCRIPT KAMU (lihat README_SETUP.md) ====
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw78AwJwk3FI7RQ3-HjdW6g2u8HnojVB4mbvGy62lcGbYpM3mb_7FVNqmbKs5VAu60/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-qfSpFlKEe-Acc6KpWbPqY3bcnRoRVpRqN7bfmDSnFArDlemscgKeSHm31x3YLI0/exec";
 // =============================================================================
 
 let positions = [];
@@ -409,11 +411,13 @@ function renderCandidates(){
         </select>
       </td>
       <td style="max-width:150px;">${escapeHtml(c.currentPosition)||''}${c.currentPosition&&c.currentCompany?' @ ':''}${escapeHtml(c.currentCompany)||''}</td>
+      <td style="max-width:140px;">${escapeHtml(c.education)||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(c.totalExperience)||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(c.relatedExperience)||'<span class="muted">-</span>'}</td>
       <td style="max-width:180px;">${tagList(c.keySkills)||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(c.expectedSalary)||'<span class="muted">-</span>'}</td>
       <td>${escapeHtml(c.noticePeriod)||'<span class="muted">-</span>'}</td>
+      <td>${escapeHtml(c.recruiter)||'<span class="muted">-</span>'}</td>
       <td>${cvHtml}</td>
       <td style="max-width:160px;">${escapeHtml(c.notes)||'<span class="muted">-</span>'}</td>
       <td>
@@ -552,7 +556,7 @@ window.quickUpdateCandidateStage = async function(id, newStage, selectEl){
 // ---- CANDIDATE FORM ----
 function resetCandForm(){
   ['name','contact','currentCompany','currentPosition','totalExperience','relatedExperience',
-   'keySkills','expectedSalary','noticePeriod','notes'].forEach(f=>{
+   'education','recruiter','keySkills','expectedSalary','noticePeriod','notes'].forEach(f=>{
     document.getElementById('c-'+f).value='';
   });
   document.getElementById('c-position').value = positions[0]?.id || '';
@@ -604,6 +608,8 @@ document.getElementById('c-save').addEventListener('click', async () => {
   const data = {
     name, contact, currentCompany, currentPosition, totalExperience,
     relatedExperience, keySkills, expectedSalary, noticePeriod,
+    education: document.getElementById('c-education').value.trim(),
+    recruiter: document.getElementById('c-recruiter').value.trim(),
     positionId: document.getElementById('c-position').value,
     stage: document.getElementById('c-stage').value,
     notes: document.getElementById('c-notes').value.trim(),
@@ -645,6 +651,8 @@ window.editCandidate = function(id){
   document.getElementById('c-keySkills').value=c.keySkills||'';
   document.getElementById('c-expectedSalary').value=c.expectedSalary||'';
   document.getElementById('c-noticePeriod').value=c.noticePeriod||'';
+  document.getElementById('c-education').value=c.education||'';
+  document.getElementById('c-recruiter').value=c.recruiter||'';
   document.getElementById('c-notes').value=c.notes||'';
   document.getElementById('c-cvFile').value='';
   document.getElementById('c-cv-current').innerHTML = c.cvUrl
@@ -684,10 +692,10 @@ document.getElementById('row-cv-input').addEventListener('change', async (e) => 
 });
 
 // ---- TEMPLATE CSV ----
-const CSV_HEADERS = ['jobId','name','contact','stage','currentCompany','currentPosition','totalExperience','relatedExperience','keySkills','expectedSalary','noticePeriod','notes'];
+const CSV_HEADERS = ['jobId','name','contact','stage','currentCompany','currentPosition','totalExperience','relatedExperience','education','recruiter','keySkills','expectedSalary','noticePeriod','notes'];
 
 document.getElementById('btn-download-template').addEventListener('click', () => {
-  const sampleRow = ['JOB-0001','Nama Kandidat','081234567890','sourced','PT Contoh','Staff Finance','3 tahun','2 tahun','Excel, SAP','10 juta','1 bulan','contoh catatan'];
+  const sampleRow = ['JOB-0001','Nama Kandidat','081234567890','sourced','PT Contoh','Staff Finance','3 tahun','2 tahun','S1 Akuntansi','Nama Recruiter','Excel, SAP','10 juta','1 bulan','contoh catatan'];
   const csv = CSV_HEADERS.join(',') + '\n' + sampleRow.map(v=>`"${v}"`).join(',');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -785,6 +793,8 @@ document.getElementById('bulk-file-input').addEventListener('change', async (e) 
       currentPosition: row.currentPosition||'',
       totalExperience: row.totalExperience||'',
       relatedExperience: row.relatedExperience||'',
+      education: row.education||'',
+      recruiter: row.recruiter||'',
       keySkills: row.keySkills||'',
       expectedSalary: row.expectedSalary||'',
       noticePeriod: row.noticePeriod||'',
