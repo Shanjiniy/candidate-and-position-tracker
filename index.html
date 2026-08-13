@@ -130,6 +130,10 @@
   .detail-label{width:160px;color:var(--text-2);flex-shrink:0;}
   .detail-value{color:var(--text);}
   @media (max-width:1000px){.dash-grid,.maint-grid,.aging-grid{grid-template-columns:1fr;}}
+  .global-toast{position:fixed;top:16px;right:16px;background:var(--text);color:#fff;padding:9px 16px 9px 14px;border-radius:8px;font-size:13px;display:none;align-items:center;gap:9px;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  .global-toast.active{display:flex;}
+  .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
@@ -203,7 +207,10 @@
           <option value="Low">Low</option>
         </select>
       </div>
-      <button class="btn" id="btn-add-position">+ Tambah posisi</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn secondary" id="btn-customize-pos-columns">Kolom</button>
+        <button class="btn" id="btn-add-position">+ Tambah posisi</button>
+      </div>
     </div>
 
     <div class="card" id="pos-form" style="display:none;">
@@ -266,9 +273,7 @@
 
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="pos-table">
-        <thead><tr>
-          <th>Job ID</th><th>Position</th><th>Client</th><th>Priority</th><th>Status</th><th>PIC</th><th>Age</th><th>Candidates</th><th></th>
-        </tr></thead>
+        <thead><tr id="pos-thead-row"></tr></thead>
         <tbody id="pos-tbody"></tbody>
       </table>
       <div class="empty" id="pos-empty" style="display:none;">Belum ada posisi. Klik "Tambah posisi" untuk mulai.</div>
@@ -296,6 +301,7 @@
         <input class="filter" id="cand-search" type="text" placeholder="Cari nama, kontak, skill..." style="min-width:200px;"/>
       </div>
       <div style="display:flex;gap:8px;">
+        <button class="btn secondary" id="btn-customize-cand-columns">Kolom</button>
         <button class="btn secondary" id="btn-download-template">Template CSV</button>
         <button class="btn secondary" id="btn-bulk-upload">Upload bulk (CSV)</button>
         <input type="file" id="bulk-file-input" accept=".csv" style="display:none;"/>
@@ -384,9 +390,7 @@
 
     <div class="card" style="padding:0;overflow-x:auto;">
       <table id="cand-table">
-        <thead><tr>
-          <th>Candidate ID</th><th>Nama</th><th>No. HP</th><th>Job ID</th><th>Posisi</th><th>Stage</th><th>Outcome</th><th>Source</th><th>Recruiter</th><th>Next follow up</th><th>CV</th><th></th>
-        </tr></thead>
+        <thead><tr id="cand-thead-row"></tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
       <div class="empty" id="cand-empty" style="display:none;">Belum ada kandidat.</div>
@@ -438,8 +442,10 @@
   </div>
 </div>
 
+<div class="global-toast" id="global-toast"><span class="spinner"></span><span id="global-toast-text">Menyimpan...</span></div>
+
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzca4UXWxKKaW6KupS3PrjVtSC81MD_dTNMTTrGosmvf-h3WtKMlyymTd8m8aUGhFw/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXpsGyGcNIi7zixUVkWXo55c7LSBmBLL3MhW6lA0-ZRRoazhnPDZGjtxmIVo74Ovk/exec";
 
 let positions = [], candidates = [], recruiters = [], clients = [], sources = [], rejectionReasons = [];
 let editingPosId = null, editingCandId = null;
@@ -450,10 +456,25 @@ const outcomeLabel = {active:"Active", onhold:"On Hold", rejected:"Rejected", wi
 const FUNNEL_ORDER = ['sourced','screening','submitted','clientinterview','offer','hired'];
 
 function isConfigured(){ return APPS_SCRIPT_URL && APPS_SCRIPT_URL.startsWith('http'); }
+let saveInFlight = 0;
+function showSaving(text){
+  saveInFlight++;
+  document.getElementById('global-toast-text').textContent = text || 'Menyimpan...';
+  document.getElementById('global-toast').classList.add('active');
+}
+function hideSaving(){
+  saveInFlight = Math.max(0, saveInFlight - 1);
+  if(saveInFlight === 0) document.getElementById('global-toast').classList.remove('active');
+}
 async function apiGetAll(){ const res = await fetch(APPS_SCRIPT_URL); return res.json(); }
 async function apiPost(action, payload){
-  const res = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ action, ...payload }) });
-  return res.json();
+  showSaving();
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ action, ...payload }) });
+    return await res.json();
+  } finally {
+    hideSaving();
+  }
 }
 function fileToBase64(file){
   return new Promise((resolve, reject) => {
@@ -507,6 +528,7 @@ document.getElementById('modal-overlay').addEventListener('click', (e) => { if(e
 async function loadData(){
   if(!isConfigured()){ document.getElementById('pos-loading').style.display = 'none'; return; }
   document.getElementById('setup-banner').style.display = 'none';
+  showSaving('Memuat data...');
   try{
     const data = await apiGetAll();
     positions = data.positions || [];
@@ -517,8 +539,10 @@ async function loadData(){
     rejectionReasons = data.rejectionReasons || [];
   }catch(e){
     document.getElementById('pos-loading').textContent = 'Gagal memuat data. Cek koneksi / URL Apps Script.';
+    hideSaving();
     return;
   }
+  hideSaving();
   document.getElementById('pos-loading').style.display = 'none';
   renderAll();
 }
@@ -699,8 +723,169 @@ document.getElementById('c-outcome').addEventListener('change', function(){
   document.getElementById('c-rejectionReason-field').style.display = this.value === 'rejected' ? 'block' : 'none';
 });
 
+// ==================== COLUMN CUSTOMIZATION ====================
+const POS_COLUMN_DEFS = [
+  {key:'jobId', label:'Job ID', default:true},
+  {key:'title', label:'Position', default:true},
+  {key:'client', label:'Client', default:true},
+  {key:'priority', label:'Priority', default:true},
+  {key:'status', label:'Status', default:true},
+  {key:'picRecruiter', label:'PIC', default:true},
+  {key:'age', label:'Age', default:true},
+  {key:'candidates', label:'Candidates', default:true},
+  {key:'workLocation', label:'Location', default:false},
+  {key:'employmentType', label:'Employment Type', default:false},
+  {key:'workArrangement', label:'Work Arrangement', default:false},
+  {key:'experienceRequired', label:'Experience Required', default:false},
+  {key:'salaryRange', label:'Salary Range', default:false},
+  {key:'numberOfHiring', label:'Number of Hiring', default:false},
+  {key:'requestDate', label:'Request Date', default:false},
+  {key:'targetHireDate', label:'Target Hire Date', default:false},
+  {key:'nextFollowUp', label:'Next Follow Up', default:false},
+];
+const CAND_COLUMN_DEFS = [
+  {key:'candidateId', label:'Candidate ID', default:true},
+  {key:'name', label:'Nama', default:true},
+  {key:'phone', label:'No. HP', default:true},
+  {key:'jobId', label:'Job ID', default:true},
+  {key:'position', label:'Posisi', default:true},
+  {key:'stage', label:'Stage', default:true},
+  {key:'outcome', label:'Outcome', default:true},
+  {key:'source', label:'Source', default:true},
+  {key:'recruiter', label:'Recruiter', default:true},
+  {key:'nextFollowUp', label:'Next Follow Up', default:true},
+  {key:'cv', label:'CV', default:true},
+  {key:'email', label:'Email', default:false},
+  {key:'currentCompany', label:'Current Company', default:false},
+  {key:'currentPosition', label:'Current Position', default:false},
+  {key:'education', label:'Education', default:false},
+  {key:'totalExperience', label:'Total Experience', default:false},
+  {key:'relatedExperience', label:'Related Experience', default:false},
+  {key:'keySkills', label:'Key Skills', default:false},
+  {key:'expectedSalary', label:'Expected Salary', default:false},
+  {key:'noticePeriod', label:'Notice Period', default:false},
+  {key:'availabilityType', label:'Availability Type', default:false},
+  {key:'availableDate', label:'Available Date', default:false},
+  {key:'lastContact', label:'Last Contact', default:false},
+  {key:'linkedin', label:'LinkedIn', default:false},
+  {key:'portfolio', label:'GitHub/Portfolio', default:false},
+  {key:'notes', label:'Notes', default:false},
+];
+
+function getVisibleCols(storageKey, defs){
+  try{
+    const saved = JSON.parse(localStorage.getItem(storageKey));
+    if(Array.isArray(saved) && saved.length){
+      const bykey = {}; defs.forEach(d=>bykey[d.key]=d);
+      const result = saved.map(k=>bykey[k]).filter(Boolean);
+      if(result.length) return result;
+    }
+  }catch(e){}
+  return defs.filter(d=>d.default);
+}
+function saveVisibleCols(storageKey, keys){
+  try{ localStorage.setItem(storageKey, JSON.stringify(keys)); }catch(e){}
+}
+function openColumnCustomizer(defs, storageKey, rerenderFn){
+  const currentKeys = getVisibleCols(storageKey, defs).map(d=>d.key);
+  let html = `<h3>Pilih kolom yang ditampilkan</h3><p class="muted" style="font-size:12px;margin:-8px 0 12px;">Pengaturan ini kesimpen di browser kamu.</p><div style="max-height:55vh;overflow-y:auto;">`;
+  defs.forEach(d => {
+    html += `<label style="display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13px;border-bottom:1px solid var(--border);">
+      <input type="checkbox" value="${d.key}" ${currentKeys.includes(d.key)?'checked':''} class="col-toggle-checkbox"/> ${d.label}
+    </label>`;
+  });
+  html += `</div><div class="form-actions">
+    <button class="btn secondary" onclick="resetColumnDefaults('${storageKey}')">Reset default</button>
+    <button class="btn" id="col-save-btn">Simpan</button>
+  </div>`;
+  showModal(html);
+  document.getElementById('col-save-btn').addEventListener('click', () => {
+    const checked = [...document.querySelectorAll('.col-toggle-checkbox:checked')].map(el=>el.value);
+    if(checked.length === 0){ alert('Pilih minimal 1 kolom.'); return; }
+    saveVisibleCols(storageKey, checked);
+    closeModal();
+    rerenderFn();
+  });
+}
+window.resetColumnDefaults = function(storageKey){
+  localStorage.removeItem(storageKey);
+  closeModal();
+  if(storageKey === 'maj_pos_columns_v1') renderPositions();
+  else renderCandidates();
+};
+document.getElementById('btn-customize-pos-columns').addEventListener('click', () => {
+  openColumnCustomizer(POS_COLUMN_DEFS, 'maj_pos_columns_v1', renderPositions);
+});
+document.getElementById('btn-customize-cand-columns').addEventListener('click', () => {
+  openColumnCustomizer(CAND_COLUMN_DEFS, 'maj_cand_columns_v1', renderCandidates);
+});
+
+function positionCellHtml(key, p, extra){
+  switch(key){
+    case 'jobId': return `<strong>${escapeHtml(p.jobId)}</strong>`;
+    case 'title': return `<span class="position-name" style="cursor:pointer;color:var(--accent);" onclick="showPositionDetail('${p.id}')">${escapeHtml(p.title)}</span>`;
+    case 'client': return escapeHtml(p.client) || '<span class="muted">-</span>';
+    case 'priority': { const pr = p.priority || 'Medium'; return `<span class="badge b-${pr.toLowerCase()}">${escapeHtml(pr)}</span>`; }
+    case 'status': return `<select class="inline-select b-${p.status}" onchange="quickUpdatePositionStatus('${p.id}', this.value, this)">
+        <option value="open" ${p.status==='open'?'selected':''}>Open</option>
+        <option value="onhold" ${p.status==='onhold'?'selected':''}>On hold</option>
+        <option value="closed" ${p.status==='closed'?'selected':''}>Closed</option>
+      </select>`;
+    case 'picRecruiter': return escapeHtml(p.picRecruiter) || '<span class="muted">-</span>';
+    case 'age': return extra.age !== null ? extra.age + ' hari' : '<span class="muted">-</span>';
+    case 'candidates': return `<button class="count-pill" onclick="showCandidateBreakdown('${p.id}')">${extra.activeCandCount}</button>`;
+    case 'workLocation': return escapeHtml(p.workLocation) || '<span class="muted">-</span>';
+    case 'employmentType': return escapeHtml(p.employmentType) || '<span class="muted">-</span>';
+    case 'workArrangement': return escapeHtml(p.workArrangement) || '<span class="muted">-</span>';
+    case 'experienceRequired': return escapeHtml(p.experienceRequired) || '<span class="muted">-</span>';
+    case 'salaryRange': return escapeHtml(p.salaryRange) || '<span class="muted">-</span>';
+    case 'numberOfHiring': return p.numberOfHiring || '<span class="muted">-</span>';
+    case 'requestDate': return p.requestDate || '<span class="muted">-</span>';
+    case 'targetHireDate': return p.targetHireDate || '<span class="muted">-</span>';
+    case 'nextFollowUp': return p.nextFollowUp || '<span class="muted">-</span>';
+    default: return '<span class="muted">-</span>';
+  }
+}
+
+function candidateCellHtml(key, c, extra){
+  switch(key){
+    case 'candidateId': return `<strong>${escapeHtml(c.candidateId)||'<span class="muted">-</span>'}</strong>`;
+    case 'name': return `<span style="cursor:pointer;color:var(--accent);" onclick="showCandidateDetail('${c.id}')">${escapeHtml(c.name)}</span>`;
+    case 'phone': return escapeHtml(c.phone) || '<span class="muted">-</span>';
+    case 'jobId': return extra.pos ? escapeHtml(extra.pos.jobId) : '<span class="muted">-</span>';
+    case 'position': return extra.pos ? escapeHtml(extra.pos.title) : '<span class="muted">dihapus</span>';
+    case 'stage': return `<select class="inline-select b-${c.stage}" onchange="quickUpdateCandidateStage('${c.id}', this.value, this)">
+        ${FUNNEL_ORDER.map(s=>`<option value="${s}" ${c.stage===s?'selected':''}>${stageLabel[s]}</option>`).join('')}
+      </select>`;
+    case 'outcome': return `<span class="badge b-${extra.outcome}">${outcomeLabel[extra.outcome]}</span>`;
+    case 'source': return escapeHtml(c.source) || '<span class="muted">-</span>';
+    case 'recruiter': return escapeHtml(c.recruiter) || '<span class="muted">-</span>';
+    case 'nextFollowUp': return `<span style="${extra.overdue?'color:var(--red);font-weight:600;':''}">${c.nextFollowUp||'<span class="muted">-</span>'}</span>`;
+    case 'cv': return extra.cvHtml;
+    case 'email': return escapeHtml(c.email) || '<span class="muted">-</span>';
+    case 'currentCompany': return escapeHtml(c.currentCompany) || '<span class="muted">-</span>';
+    case 'currentPosition': return escapeHtml(c.currentPosition) || '<span class="muted">-</span>';
+    case 'education': return escapeHtml(c.education) || '<span class="muted">-</span>';
+    case 'totalExperience': return escapeHtml(c.totalExperience) || '<span class="muted">-</span>';
+    case 'relatedExperience': return escapeHtml(c.relatedExperience) || '<span class="muted">-</span>';
+    case 'keySkills': return tagList(c.keySkills) || '<span class="muted">-</span>';
+    case 'expectedSalary': return escapeHtml(c.expectedSalary) || '<span class="muted">-</span>';
+    case 'noticePeriod': return escapeHtml(c.noticePeriod) || '<span class="muted">-</span>';
+    case 'availabilityType': return escapeHtml(c.availabilityType) || '<span class="muted">-</span>';
+    case 'availableDate': return c.availableDate || '<span class="muted">-</span>';
+    case 'lastContact': return c.lastContact || '<span class="muted">-</span>';
+    case 'linkedin': return c.linkedin ? `<a class="cv-link" href="${c.linkedin}" target="_blank" rel="noopener">Lihat</a>` : '<span class="muted">-</span>';
+    case 'portfolio': return c.portfolio ? `<a class="cv-link" href="${c.portfolio}" target="_blank" rel="noopener">Lihat</a>` : '<span class="muted">-</span>';
+    case 'notes': return escapeHtml(c.notes) || '<span class="muted">-</span>';
+    default: return '<span class="muted">-</span>';
+  }
+}
+
 function renderPositions(){
   const tbody = document.getElementById('pos-tbody');
+  const visibleCols = getVisibleCols('maj_pos_columns_v1', POS_COLUMN_DEFS);
+  document.getElementById('pos-thead-row').innerHTML = visibleCols.map(c=>`<th>${c.label}</th>`).join('') + '<th></th>';
+
   const fStatus = document.getElementById('pos-filter-status').value;
   const fClient = document.getElementById('pos-filter-client').value;
   const fPic = document.getElementById('pos-filter-pic').value;
@@ -716,27 +901,12 @@ function renderPositions(){
     const candForPos = candidates.filter(c => c.positionId === p.id);
     const activeCandCount = candForPos.filter(c => effectiveOutcome(c)!=='rejected' && effectiveOutcome(c)!=='withdrawn').length;
     const age = daysBetween(p.requestDate || p.createdAt);
-    const priority = p.priority || 'Medium';
-    return `<tr>
-      <td><strong>${escapeHtml(p.jobId)}</strong></td>
-      <td class="position-name" style="cursor:pointer;color:var(--accent);" onclick="showPositionDetail('${p.id}')">${escapeHtml(p.title)}</td>
-      <td>${escapeHtml(p.client)}</td>
-      <td><span class="badge b-${priority.toLowerCase()}">${escapeHtml(priority)}</span></td>
-      <td>
-        <select class="inline-select b-${p.status}" onchange="quickUpdatePositionStatus('${p.id}', this.value, this)">
-          <option value="open" ${p.status==='open'?'selected':''}>Open</option>
-          <option value="onhold" ${p.status==='onhold'?'selected':''}>On hold</option>
-          <option value="closed" ${p.status==='closed'?'selected':''}>Closed</option>
-        </select>
-      </td>
-      <td>${escapeHtml(p.picRecruiter)||'<span class="muted">-</span>'}</td>
-      <td>${age!==null ? age+' hari' : '<span class="muted">-</span>'}</td>
-      <td><button class="count-pill" onclick="showCandidateBreakdown('${p.id}')">${activeCandCount}</button></td>
-      <td>
+    const extra = { age, activeCandCount };
+    const cells = visibleCols.map(c => `<td>${positionCellHtml(c.key, p, extra)}</td>`).join('');
+    return `<tr>${cells}<td>
         <button class="link-btn" onclick="editPosition('${p.id}')">Edit</button>
         <button class="link-btn danger" onclick="deletePosition('${p.id}')">Hapus</button>
-      </td>
-    </tr>`;
+      </td></tr>`;
   }).join('');
 }
 ['pos-filter-status','pos-filter-client','pos-filter-pic','pos-filter-priority'].forEach(id => {
@@ -829,9 +999,17 @@ document.getElementById('p-save').addEventListener('click', async () => {
   };
   document.getElementById('p-save').disabled = true;
   try{
-    if(editingPosId){ await apiPost('updatePosition', { id: editingPosId, data }); }
-    else { await apiPost('addPosition', { data }); }
-    await loadData();
+    if(editingPosId){
+      const res = await apiPost('updatePosition', { id: editingPosId, data });
+      const p = positions.find(x=>x.id===editingPosId);
+      if(p) Object.assign(p, data, { lastUpdate: res.lastUpdate || todayStr() });
+    } else {
+      const res = await apiPost('addPosition', { data });
+      positions.push({ ...data, id: res.id, jobId: res.jobId, lastUpdate: res.lastUpdate, createdAt: new Date().toISOString() });
+    }
+    renderPositions();
+    renderPositionOptions();
+    renderDashboard();
     document.getElementById('pos-form').style.display='none';
   }catch(e){ alert('Gagal menyimpan. Coba lagi.'); }
   document.getElementById('p-save').disabled = false;
@@ -866,7 +1044,10 @@ window.editPosition = function(id){
 window.deletePosition = async function(id){
   if(!confirm('Hapus posisi ini?')) return;
   await apiPost('deletePosition', { id });
-  await loadData();
+  positions = positions.filter(p=>p.id!==id);
+  renderPositions();
+  renderPositionOptions();
+  renderDashboard();
 };
 window.quickUpdatePositionStatus = async function(id, newStatus, selectEl){
   const oldClass = [...selectEl.classList].find(c=>c.startsWith('b-'));
@@ -884,6 +1065,9 @@ window.quickUpdatePositionStatus = async function(id, newStatus, selectEl){
 
 function renderCandidates(){
   const tbody = document.getElementById('cand-tbody');
+  const visibleCols = getVisibleCols('maj_cand_columns_v1', CAND_COLUMN_DEFS);
+  document.getElementById('cand-thead-row').innerHTML = visibleCols.map(c=>`<th>${c.label}</th>`).join('') + '<th></th>';
+
   const fPos = document.getElementById('cand-filter-position').value;
   const fStage = document.getElementById('cand-filter-stage').value;
   const fOutcome = document.getElementById('cand-filter-outcome').value;
@@ -908,34 +1092,17 @@ function renderCandidates(){
   document.getElementById('cand-empty').style.display = rows.length ? 'none' : 'block';
   tbody.innerHTML = rows.map(c => {
     const pos = positions.find(p => p.id === c.positionId);
-    const jobIdLabel = pos ? escapeHtml(pos.jobId) : '<span class="muted">-</span>';
-    const posLabel = pos ? escapeHtml(pos.title) : '<span class="muted">dihapus</span>';
     const outcome = effectiveOutcome(c);
     const cvHtml = c.cvUrl
       ? `<a class="cv-link" href="${c.cvUrl}" target="_blank" rel="noopener">Lihat</a>`
       : `<button class="link-btn" onclick="triggerCvUpload('${c.id}')" style="color:var(--amber);">Upload</button>`;
     const overdue = c.nextFollowUp && c.nextFollowUp < today;
-    return `<tr>
-      <td><strong>${escapeHtml(c.candidateId)||'<span class="muted">-</span>'}</strong></td>
-      <td style="cursor:pointer;color:var(--accent);" onclick="showCandidateDetail('${c.id}')">${escapeHtml(c.name)}</td>
-      <td>${escapeHtml(c.phone)||'<span class="muted">-</span>'}</td>
-      <td>${jobIdLabel}</td>
-      <td>${posLabel}</td>
-      <td>
-        <select class="inline-select b-${c.stage}" onchange="quickUpdateCandidateStage('${c.id}', this.value, this)">
-          ${FUNNEL_ORDER.map(s=>`<option value="${s}" ${c.stage===s?'selected':''}>${stageLabel[s]}</option>`).join('')}
-        </select>
-      </td>
-      <td><span class="badge b-${outcome}">${outcomeLabel[outcome]}</span></td>
-      <td>${escapeHtml(c.source)||'<span class="muted">-</span>'}</td>
-      <td>${escapeHtml(c.recruiter)||'<span class="muted">-</span>'}</td>
-      <td style="${overdue?'color:var(--red);font-weight:600;':''}">${c.nextFollowUp||'<span class="muted">-</span>'}</td>
-      <td>${cvHtml}</td>
-      <td>
+    const extra = { pos, outcome, cvHtml, overdue };
+    const cells = visibleCols.map(col => `<td>${candidateCellHtml(col.key, c, extra)}</td>`).join('');
+    return `<tr>${cells}<td>
         <button class="link-btn" onclick="editCandidate('${c.id}')">Edit</button>
         <button class="link-btn danger" onclick="deleteCandidate('${c.id}')">Hapus</button>
-      </td>
-    </tr>`;
+      </td></tr>`;
   }).join('');
 }
 ['cand-filter-position','cand-filter-stage','cand-filter-outcome','cand-filter-recruiter','cand-filter-source'].forEach(id=>{
@@ -1047,9 +1214,23 @@ document.getElementById('c-save').addEventListener('click', async () => {
       data.cvFileName = cvFile.name;
       data.cvMimeType = cvFile.type;
     }
-    if(editingCandId){ await apiPost('updateCandidate', { id: editingCandId, data }); }
-    else { await apiPost('addCandidate', { data }); }
-    await loadData();
+    if(editingCandId){
+      const res = await apiPost('updateCandidate', { id: editingCandId, data });
+      const c = candidates.find(x=>x.id===editingCandId);
+      if(c){
+        Object.assign(c, data);
+        if(res.cvUrl) c.cvUrl = res.cvUrl;
+        delete c.cvBase64;
+      }
+    } else {
+      const res = await apiPost('addCandidate', { data });
+      const newCand = { ...data, id: res.id, candidateId: res.candidateId, cvUrl: res.cvUrl || '', createdAt: new Date().toISOString() };
+      delete newCand.cvBase64;
+      candidates.push(newCand);
+    }
+    renderCandidates();
+    renderPositions();
+    renderDashboard();
     document.getElementById('cand-form').style.display='none';
   }catch(e){ alert('Gagal menyimpan. Coba lagi.'); }
   document.getElementById('c-save').disabled = false;
@@ -1093,7 +1274,10 @@ window.editCandidate = function(id){
 window.deleteCandidate = async function(id){
   if(!confirm('Hapus kandidat ini?')) return;
   await apiPost('deleteCandidate', { id });
-  await loadData();
+  candidates = candidates.filter(c=>c.id!==id);
+  renderCandidates();
+  renderPositions();
+  renderDashboard();
 };
 window.quickUpdateCandidateStage = async function(id, newStage, selectEl){
   const oldClass = [...selectEl.classList].find(c=>c.startsWith('b-'));
@@ -1104,6 +1288,7 @@ window.quickUpdateCandidateStage = async function(id, newStage, selectEl){
     await apiPost('updateCandidate', { id, data: { stage: newStage } });
     const c = candidates.find(x=>x.id===id);
     if(c) c.stage = newStage;
+    renderPositions();
     renderDashboard();
   }catch(e){ alert('Gagal update stage.'); await loadData(); }
   selectEl.disabled = false;
@@ -1119,8 +1304,10 @@ document.getElementById('row-cv-input').addEventListener('change', async (e) => 
   pendingCvCandidateId = null;
   try{
     const cvBase64 = await fileToBase64(file);
-    await apiPost('updateCandidate', { id, data: { cvBase64, cvFileName: file.name, cvMimeType: file.type } });
-    await loadData();
+    const res = await apiPost('updateCandidate', { id, data: { cvBase64, cvFileName: file.name, cvMimeType: file.type } });
+    const c = candidates.find(x=>x.id===id);
+    if(c && res.cvUrl) c.cvUrl = res.cvUrl;
+    renderCandidates();
   }catch(err){ alert('Gagal upload CV. Coba lagi.'); }
 });
 
@@ -1223,25 +1410,51 @@ function renderMaintenance(){
   document.getElementById('maint-source-list').innerHTML = listHtml(sources, 'deleteSource');
   document.getElementById('maint-reason-list').innerHTML = listHtml(rejectionReasons, 'deleteRejectionReason');
 }
-function setupMaintAdd(btnId, inputId, list, action){
+function setupMaintAdd(btnId, inputId, listGetter, action, onAdded){
   document.getElementById(btnId).addEventListener('click', async () => {
     const input = document.getElementById(inputId);
     const name = input.value.trim();
     if(!name) return;
+    const list = listGetter();
     if(list.some(x=>x.name.toLowerCase()===name.toLowerCase())){ alert('Nama ini sudah ada di daftar.'); return; }
-    await apiPost(action, { data: { name } });
+    const res = await apiPost(action, { data: { name } });
+    onAdded({ id: res.id, name, createdAt: new Date().toISOString() });
     input.value = '';
-    await loadData();
+    renderMaintenance();
+    renderRecruiterOptions();
+    renderClientOptions();
+    renderSourceOptions();
+    renderRejectionReasonOptions();
   });
 }
-setupMaintAdd('btn-add-recruiter','maint-recruiter-input', recruiters, 'addRecruiter');
-setupMaintAdd('btn-add-client','maint-client-input', clients, 'addClient');
-setupMaintAdd('btn-add-source','maint-source-input', sources, 'addSource');
-setupMaintAdd('btn-add-reason','maint-reason-input', rejectionReasons, 'addRejectionReason');
-window.deleteRecruiter = async function(id){ if(!confirm('Hapus dari daftar?')) return; await apiPost('deleteRecruiter', { id }); await loadData(); };
-window.deleteClient = async function(id){ if(!confirm('Hapus dari daftar?')) return; await apiPost('deleteClient', { id }); await loadData(); };
-window.deleteSource = async function(id){ if(!confirm('Hapus dari daftar?')) return; await apiPost('deleteSource', { id }); await loadData(); };
-window.deleteRejectionReason = async function(id){ if(!confirm('Hapus dari daftar?')) return; await apiPost('deleteRejectionReason', { id }); await loadData(); };
+setupMaintAdd('btn-add-recruiter','maint-recruiter-input', ()=>recruiters, 'addRecruiter', (item)=>recruiters.push(item));
+setupMaintAdd('btn-add-client','maint-client-input', ()=>clients, 'addClient', (item)=>clients.push(item));
+setupMaintAdd('btn-add-source','maint-source-input', ()=>sources, 'addSource', (item)=>sources.push(item));
+setupMaintAdd('btn-add-reason','maint-reason-input', ()=>rejectionReasons, 'addRejectionReason', (item)=>rejectionReasons.push(item));
+window.deleteRecruiter = async function(id){
+  if(!confirm('Hapus dari daftar?')) return;
+  await apiPost('deleteRecruiter', { id });
+  recruiters = recruiters.filter(x=>x.id!==id);
+  renderMaintenance(); renderRecruiterOptions();
+};
+window.deleteClient = async function(id){
+  if(!confirm('Hapus dari daftar?')) return;
+  await apiPost('deleteClient', { id });
+  clients = clients.filter(x=>x.id!==id);
+  renderMaintenance(); renderClientOptions();
+};
+window.deleteSource = async function(id){
+  if(!confirm('Hapus dari daftar?')) return;
+  await apiPost('deleteSource', { id });
+  sources = sources.filter(x=>x.id!==id);
+  renderMaintenance(); renderSourceOptions();
+};
+window.deleteRejectionReason = async function(id){
+  if(!confirm('Hapus dari daftar?')) return;
+  await apiPost('deleteRejectionReason', { id });
+  rejectionReasons = rejectionReasons.filter(x=>x.id!==id);
+  renderMaintenance(); renderRejectionReasonOptions();
+};
 
 loadData();
 </script>
