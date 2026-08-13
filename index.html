@@ -445,7 +445,7 @@
 <div class="global-toast" id="global-toast"><span class="spinner"></span><span id="global-toast-text">Menyimpan...</span></div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXpsGyGcNIi7zixUVkWXo55c7LSBmBLL3MhW6lA0-ZRRoazhnPDZGjtxmIVo74Ovk/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFPH3xc7JHLKEXtVelBmYh8F_qaVT-qO16s1oxbn5VrglW7Zg5vwwpnA7R-o7exQo/exec";
 
 let positions = [], candidates = [], recruiters = [], clients = [], sources = [], rejectionReasons = [];
 let editingPosId = null, editingCandId = null;
@@ -857,7 +857,12 @@ function candidateCellHtml(key, c, extra){
     case 'stage': return `<select class="inline-select b-${c.stage}" onchange="quickUpdateCandidateStage('${c.id}', this.value, this)">
         ${FUNNEL_ORDER.map(s=>`<option value="${s}" ${c.stage===s?'selected':''}>${stageLabel[s]}</option>`).join('')}
       </select>`;
-    case 'outcome': return `<span class="badge b-${extra.outcome}">${outcomeLabel[extra.outcome]}</span>`;
+    case 'outcome': return `<select class="inline-select b-${extra.outcome}" onchange="quickUpdateCandidateOutcome('${c.id}', this.value, this)">
+        <option value="active" ${extra.outcome==='active'?'selected':''}>Active</option>
+        <option value="onhold" ${extra.outcome==='onhold'?'selected':''}>On Hold</option>
+        <option value="rejected" ${extra.outcome==='rejected'?'selected':''}>Rejected</option>
+        <option value="withdrawn" ${extra.outcome==='withdrawn'?'selected':''}>Withdrawn</option>
+      </select>`;
     case 'source': return escapeHtml(c.source) || '<span class="muted">-</span>';
     case 'recruiter': return escapeHtml(c.recruiter) || '<span class="muted">-</span>';
     case 'nextFollowUp': return `<span style="${extra.overdue?'color:var(--red);font-weight:600;':''}">${c.nextFollowUp||'<span class="muted">-</span>'}</span>`;
@@ -1291,6 +1296,51 @@ window.quickUpdateCandidateStage = async function(id, newStage, selectEl){
     renderPositions();
     renderDashboard();
   }catch(e){ alert('Gagal update stage.'); await loadData(); }
+  selectEl.disabled = false;
+};
+
+window.quickUpdateCandidateOutcome = async function(id, newOutcome, selectEl){
+  const c = candidates.find(x=>x.id===id);
+  if(!c) return;
+
+  if(newOutcome === 'rejected'){
+    let html = `<h3>Alasan reject — ${escapeHtml(c.name)}</h3>`;
+    html += `<div class="field" style="margin-bottom:14px;"><select id="quick-reject-reason">
+      <option value="">- pilih alasan -</option>
+      ${rejectionReasons.map(r=>`<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}</option>`).join('')}
+    </select></div>`;
+    html += `<div class="form-actions">
+      <button class="btn secondary" onclick="closeModal(); renderCandidates();">Batal</button>
+      <button class="btn" id="quick-reject-save">Simpan</button>
+    </div>`;
+    showModal(html);
+    document.getElementById('quick-reject-save').addEventListener('click', async () => {
+      const reason = document.getElementById('quick-reject-reason').value;
+      if(!reason){ alert('Pilih alasan reject dulu.'); return; }
+      try{
+        await apiPost('updateCandidate', { id, data: { outcome: 'rejected', rejectionReason: reason } });
+        c.outcome = 'rejected';
+        c.rejectionReason = reason;
+        closeModal();
+        renderCandidates();
+        renderPositions();
+        renderDashboard();
+      }catch(e){ alert('Gagal update outcome.'); }
+    });
+    return;
+  }
+
+  const oldClass = [...selectEl.classList].find(cl=>cl.startsWith('b-'));
+  selectEl.classList.remove(oldClass);
+  selectEl.classList.add('b-'+newOutcome);
+  selectEl.disabled = true;
+  try{
+    await apiPost('updateCandidate', { id, data: { outcome: newOutcome, rejectionReason: '' } });
+    c.outcome = newOutcome;
+    c.rejectionReason = '';
+    renderPositions();
+    renderDashboard();
+  }catch(e){ alert('Gagal update outcome.'); await loadData(); }
   selectEl.disabled = false;
 };
 
